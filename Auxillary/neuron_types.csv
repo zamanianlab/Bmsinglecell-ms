@@ -1,0 +1,25 @@
+﻿gene_id,gene_name,neurotransmitter,subtype,goal,description,reference
+WBGene00228788,ace-2,Cholinergic,,synthesis,acetylcholinesterase (breaks down Ach); not expressed in all cholinergic neuron classes,"Serrano-Saiz et. al, 2017, Serrano-Saiz et. al, 2020, Pereira et al. 2015"
+WBGene00222230,bas-1,Aminergic,Dopaminergic,synthesis,,"Chase and Koelle 2007, Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00222230,bas-1,Aminergic,Serotonergic,synthesis,,"Chase and Koelle 2007, Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00225236,cat-1,Aminergic,Octopaminergic,synthesis,matabolic process,"Chase and Koelle 2007, Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00225236,cat-1,Aminergic,Tyraminergic,synthesis,matabolic process,"Chase and Koelle 2007, Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00225236,cat-1,Aminergic,Dopaminergic,synthesis,dopamine matabolic process,"Chase and Koelle 2007, Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00225236,cat-1,Aminergic,Serotonergic,synthesis,,"Chase and Koelle 2007, Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00225191,cat-2,Aminergic,Dopaminergic,synthesis,tyrosine hydoxylase,"Chase and Koelle 2007, Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00227648,cha-1,Cholinergic,,transport,"unc-17; choline acetyltransferase, packages Ach into synaptic vesicles","Serrano-Saiz et. al, 2017, Serrano-Saiz et. al, 2020"
+WBGene00223095,cho-1,Cholinergic,,transport,transmembrane choline  transporter activity,"Serrano-Saiz et. al, 2017, Serrano-Saiz et. al, 2020"
+WBGene00226221,dat-1,Aminergic,Dopaminergic,transport,dopamine transporter,"Flames et al 2009, Serrano-Saiz et al, 2017"
+WBGene00227744,eat-4,Glutamatergic,,transport,vesicular transporter of glutamate,"Lee et al., 1999, Serrano-Saiz et al, 2017"
+WBGene00227067,mod-5,Aminergic,Serotonergic,transport,,"Serrano-Saiz et. al, 2017"
+WBGene00225778,snf-11,GABAergic,,transport,GABA transport involvement,"Serrano-Saiz et. al, 2020, Serrano-Saiz et. al, 2017"
+WBGene00224985,tdc-1,Aminergic,Octopaminergic,synthesis,,"Serrano-Saiz et. al, 2017"
+WBGene00224985,tdc-1,Aminergic,Tyraminergic,synthesis,,"Serrano-Saiz et. al, 2017"
+WBGene00227917,tph-1,Aminergic,Serotonergic,synthesis,,"Serrano-Saiz et. al, 2017"
+WBGene00226652,unc-25,GABAergic,,synthesis,expressed in all GABAergic neuron classes,"McIntire et al. 1993, Gendrel et al. 2016, Serrano-Saiz et. al, 2020, Serrano-Saiz et. al, 2017"
+WBGene00226131,unc-47,GABAergic,,transport,transmembrane amino acid transporter protein,"Serrano-Saiz et. al, 2020, Serrano-Saiz et. al, 2017"
+WBGene00226594,ric-4,Pan,,Pan,"Is predicted to encode a protein with the following domains: SNAP-25 family; Target SNARE coiled-coil homology domain; and SNAP-25 domain. Is an ortholog of C. elegans chrV_pilon.g15472 and ric-4. In C. elegans, ric-4 is involved in cholinergic synaptic transmission.",Stefanakis et al. 2015
+WBGene00225764,sbt-1,Pan,,Pan,,Gendrel et al. 2016
+WBGene00221982,ida-1,Pan,,Pan,,
+WBGene00223147,egl-3,Pan,,Pan,,Stefanakis et al. 2015
+WBGene00223381,egl-21,Pan,,Pan,,Stefanakis et al. 2015

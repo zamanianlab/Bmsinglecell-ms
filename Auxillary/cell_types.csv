@@ -1,0 +1,112 @@
+﻿gene_id,gene_name,subtype,type,cluster,description,reference
+WBGene00226131,unc-47,GABAergic,neuron,7,"Is predicted to encode a protein with the following domains: Transmembrane amino acid transporter protein and Amino acid transporter, transmembrane domain. Is an ortholog of C. elegans chrIII_pilon.g8813 and unc-47.","https://elifesciences.org/articles/17686, cengen"
+WBGene00226652,unc-25,GABAergic,neuron,7,"Predicted to enable carbon-carbon lyase activity and pyridoxal phosphate binding activity. Predicted to be involved in carboxylic acid metabolic process. Is an ortholog of C. elegans chrIII_pilon.g9265 and unc-25. In C. elegans, unc-25 is involved in GABAergic synaptic transmission",https://elifesciences.org/articles/17686
+WBGene00222210,unc-46,GABAergic,neuron,7,Is an ortholog of C. elegans chrV_pilon.g14161 and unc-46,https://elifesciences.org/articles/17686
+WBGene00225778,snf-11,GABAergic,neuron,7,"Predicted to be integral component of membrane. Is an ortholog of C. elegans chrV_pilon.g15742 and snf-11. In C. elegans, snf-11 is involved in gamma-aminobutyric acid transport",https://elifesciences.org/articles/17686
+WBGene00225347,Bm5086,muscle,muscle,3,actin family based in the body wall,"Morris CP et al, 2015"
+WBGene00228758,Bm8497,muscle,muscle,3,,
+WBGene00223568,unc-54.1,muscle,muscle,3,myosin,"Morris CP et al, 2015"
+WBGene00231447,myo-3,muscle,muscle,3,myosin,"Morris CP et al, 2015"
+WBGene00224377,unc-54.2,muscle,muscle,3,myosin,"Morris CP et al, 2015"
+WBGene00223423,Bm3162,muscle,muscle,3,paramyosin,"Morris CP et al, 2015"
+WBGene00227763,unc-22,muscle,muscle,3,muclse arrangement and contraction,"Morris CP et al, 2015"
+WBGene00224604,Bm4343,muscle,muscle,3,calcium binding activity,"Morris CP et al, 2015"
+WBGene00222353,unc-89,muscle,muscle,3,,
+WBGene00222551,dim-1,muscle,muscle,3,disorganized muscle protein 1,"Morris CP et al, 2015"
+WBGene00224604,pat-10,muscle,muscle,3,body wall marker in c elegans ,cengen
+WBGene00225347,Bm5086,muscle,muscle,5,actin family based in the body wall,"Morris CP et al, 2015"
+WBGene00222551,dim-1,muscle,muscle,5,disorganized muscle protein 1,"Morris CP et al, 2015"
+WBGene00228758,Bm8497,muscle,muscle,5,,
+WBGene00223568,unc-54.1,muscle,muscle,5,myosin,"Morris CP et al, 2015"
+WBGene00231447,myo-3,muscle,muscle,5,myosin,"Morris CP et al, 2015"
+WBGene00224377,unc-54.2,muscle,muscle,5,myosin,"Morris CP et al, 2015"
+WBGene00223423,Bm3162,muscle,muscle,5,paramyosin,"Morris CP et al, 2015"
+WBGene00227763,unc-22,muscle,muscle,5,"Morris CP et al, 2015","Morris CP et al, 2015"
+WBGene00224604,Bm4343,muscle,muscle,5,calcium binding activity,"Morris CP et al, 2015"
+WBGene00222353,unc-89,muscle,muscle,5,,
+WBGene00228555,ocr-1/2b,sensory,neuron,6,multiple sensory modalities,"Wheeler et al, 2020"
+WBGene00234359,ocr-1/2b,sensory,neuron,6,multiple sensory modalities,"Wheeler et al, 2020"
+WBGene00225952,ocr-1/2a,sensory,neuron,6,multiple sensory modalities,"Wheeler et al, 2020"
+WBGene00225764,sbt-1,neuron,neuron,6,pan-neuronal marker involved in neuropeptide signaling,cengen
+WBGene00223381,egl-21,neuron,neuron,6,neuropeptide synthesis and secretion ,
+WBGene00221982,ida-1,neuron,neuron,6,,"Lorenzo et al 2020, Zahn et al, 2001 "
+WBGene00223147,egl-3,neuron,neuron,6,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223161,unc-104,neuron,neuron,6,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00227841,unc-31,neuron,neuron,6,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00226594,ric-4,neuron,neuron,6,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223993,snt-1,neuron,neuron,6,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00232519,unc-10,neuron,neuron,6,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00225764,sbt-1,neuron,neuron,7,pan-neuronal marker involved in neuropeptide signaling,cengen
+WBGene00223381,egl-21,neuron,neuron,7,neuropeptide synthesis and secretion ,
+WBGene00221982,ida-1,neuron,neuron,7,,"Lorenzo et al 2020, Zahn et al, 2001 "
+WBGene00223147,egl-3,neuron,neuron,7,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223161,unc-104,neuron,neuron,7,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00227841,unc-31,neuron,neuron,7,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00226594,ric-4,neuron,neuron,7,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223993,snt-1,neuron,neuron,7,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00232519,unc-10,neuron,neuron,7,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00227264,Bm7003,neuron,neuron,9,unknown,
+WBGene00225764,sbt-1,neuron,neuron,9,pan-neuronal marker involved in neuropeptide signaling,cengen
+WBGene00223381,egl-21,neuron,neuron,9,neuropeptide synthesis and secretion ,
+WBGene00221982,ida-1,neuron,neuron,9,,"Lorenzo et al 2020, Zahn et al, 2001 "
+WBGene00223147,egl-3,neuron,neuron,9,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223161,unc-104,neuron,neuron,9,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00227841,unc-31,neuron,neuron,9,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00226594,ric-4,neuron,neuron,9,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223993,snt-1,neuron,neuron,9,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00232519,unc-10,neuron,neuron,9,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00268467,cup-4,coelomocyte,coelomocyte,10,"Predicted to enable extracellular ligand-gated ion channel activity and transmembrane signaling receptor activity. Predicted to be involved in ion transmembrane transport. Predicted to be integral component of membrane. Is an ortholog of C. elegans chrIII_pilon.g8240 and cup-4. In C. elegans, cup-4 is involved in several processes, including determination of adult lifespan; positive regulation of oviposition; and response to caloric restriction.",Patton et al. 2005
+WBGene00227182,Bm6921,coelomocyte,coelomocyte,10,Predicted to enable extracellular ligand-gated ion channel activity and transmembrane signaling receptor activity. Predicted to be involved in ion transmembrane transport. Predicted to be integral component of membrane. Is an ortholog of C. elegans lgc-26; lgc-25; and chrX_pilon.g20531.,Patton et al. 2005
+WBGene00223869,let-381,coelomocyte,coelomocyte,10,,Amin et al 2010
+WBGene00223567,unc-122,coelomocyte,coelomocyte,10,"Is predicted to encode a protein with the following domains: Collagen triple helix repeat (20 copies); Olfactomedin-like domain; Olfactomedin-like domain; and Collagen triple helix repeat. Is an ortholog of C. elegans chrI_pilon.g2984 and unc-122. In C. elegans, unc-122 is involved in negative regulation of cholinergic synaptic transmission.",Loria et al. 2004
+WBGene00231804,Bm11543,CAN,neuron,15,Predicted to enable peptidyl-prolyl cis-trans isomerase activity. Predicted to be involved in protein peptidyl-prolyl isomerization,"cengen, packer"
+WBGene00226559,acbp-6,CAN,neuron,15,Predicted to enable fatty-acyl-CoA binding activity,"cengen, packer"
+WBGene00222948,pks-1,CAN,neuron,15,Predicted to enable acyltransferase activity and phosphopantetheine binding activity. Predicted to be involved in biosynthetic process,"cengen, packer, Stefanakis et al, 2015, Lorenzo et al 2020"
+WBGene00268476,Bm17333,CAN,neuron,15,Predicted to enable N-acetyltransferase activity,"cengen, packer"
+WBGene00304809,Bm18604,CAN,neuron,15,Is predicted to encode a protein with the following domains: Ubiquitin family; Ubiquitin-like domain; and Ubiquitin-like domain superfamily,"cengen, packer"
+WBGene00226410,ceh-10,CAN,neuron,15,Predicted to enable DNA binding activity,"cengen, packer, Svendsen and McGhee 1995, Wang et al., 1993, Forrester and Garriga 1997"
+WBGene00227343,Bm7082,CAN,neuron,15,"Is predicted to encode a protein with the following domain: FERM superfamily, second domain","cengen, packer"
+WBGene00234397,acs-9,CAN,neuron,15,"Is predicted to encode a protein with the following domains: AMP-binding enzyme; AMP-binding enzyme C-terminal domain; AMP-dependent synthetase/ligase; AMP-binding enzyme, C-terminal domain; and ANL, N-terminal domain","cengen, packer"
+WBGene00224478,Bm4217,CAN,neuron,15,Predicted to enable methyltransferase activity,"cengen, packer"
+WBGene00224403,ceh-14,Thermosensory,neuron,17,thermosensory behavior,"Cassata et al. 2000, packer et al 2019"
+WBGene00224134,tax-2,sensory,neuron,18,multiple sensory modalities,"Wheeler et al, 2020"
+WBGene00224134,tax-4,sensory,neuron,18,multiple sensory modalities,"Wheeler et al, 2020"
+WBGene00229597,cht-1.3,inner body,inner body,20,chitinase,"Wu Y et al, 2008"
+WBGene00223435,cht-1.2,inner body,inner body,20,chitinase,"Wu Y et al, 2008"
+WBGene00228562,cht-1.1,inner body,inner body,20,chitinase,"Wu Y et al, 2008"
+WBGene00224494,val-1,inner body,inner body,20,putative cholesterol binding required for motling,"Darwiche R et al, 2018"
+WBGene00227264,Bm7003,neuron,neuron,22,unknown,
+WBGene00225764,sbt-1,neuron,neuron,22,pan-neuronal marker involved in neuropeptide signaling,cengen
+WBGene00268866,flp-6,,,22,neuropeptide signaling pathway,
+WBGene00223381,egl-21,neuron,neuron,22,neuropeptide synthesis and secretion ,
+WBGene00221982,ida-1,neuron,neuron,22,,"Lorenzo et al 2020, Zahn et al, 2001 "
+WBGene00223147,egl-3,neuron,neuron,22,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223161,unc-104,neuron,neuron,22,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00227841,unc-31,neuron,neuron,22,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00226594,ric-4,neuron,neuron,22,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223993,snt-1,neuron,neuron,22,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00232519,unc-10,neuron,neuron,22,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00225764,sbt-1,neuron,neuron,25,pan-neuronal marker involved in neuropeptide signaling,cengen
+WBGene00223249,Bm2988,motor,neuron,25,,
+WBGene00225236,cat-1,motor,neuron,25,,
+WBGene00225764,sbt-1,neuron,neuron,26,pan-neuronal marker involved in neuropeptide signaling,cengen
+WBGene00223249,Bm2988,motor,neuron,26,cengen ,
+WBGene00225236,cat-1,motor,neuron,26,cengen ,
+WBGene00232070,1-Oct,motor,neuron,26,cengen ,
+WBGene00224985,tdc-1,motor,neuron,26,cengen ,
+WBGene00223518,dmd-5,motor,neuron,26,cengen ,
+WBGene00226320,twk-40,motor,neuron,26,cengen ,
+WBGene00227264,Bm7003,neuron,neuron,27,unknown,
+WBGene00225764,sbt-1,neuron,neuron,27,pan-neuronal marker involved in neuropeptide signaling,cengen
+WBGene00223381,egl-21,neuron,neuron,27,neuropeptide synthesis and secretion ,
+WBGene00221982,ida-1,neuron,neuron,27,,"Lorenzo et al 2020, Zahn et al, 2001 "
+WBGene00223147,egl-3,neuron,neuron,27,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223161,unc-104,neuron,neuron,27,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00227841,unc-31,neuron,neuron,27,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00226594,ric-4,neuron,neuron,27,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00223993,snt-1,neuron,neuron,27,neuropeptide synthesis and secretion ,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00232519,unc-10,neuron,neuron,27,synaptic vesicle biology,"Stefanakis et al. 2015, Lorenzo et al 2020"
+WBGene00225297,nlp-12,DVA,neuron,22,,Zhitao et al 2011
+WBGene00228367,mig-6,CAN,neuron,15,,Lorenzo et al 2020
+WBGene00225307,pqn-52,CAN,neuron,15,,Lorenzo et al 2020
+WBGene00223870,unc-4,motor,neuron,,,

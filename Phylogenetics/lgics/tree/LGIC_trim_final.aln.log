@@ -1,0 +1,410 @@
+IQ-TREE multicore version 2.1.3 COVID-edition for Mac OS X 64-bit built Apr 20 2021
+Developed by Bui Quang Minh, James Barbetti, Nguyen Lam Tung,
+Olga Chernomor, Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    SVM-PBS-3617.local (AVX512, FMA3, 32 GB RAM)
+Command: ./../iqtree-2.1.3-MacOSX/bin/iqtree2 -s LGIC_trim_final.aln -nt 4 -alrt 1000 -bb 1000 -redo
+Seed:    941427 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Mon Aug  9 00:40:17 2021
+Kernel:  AVX+FMA - 4 threads (8 CPU cores detected)
+
+Reading alignment file LGIC_trim_final.aln ... Fasta format detected
+Alignment most likely contains protein sequences
+Alignment has 152 sequences with 369 columns, 369 distinct patterns
+362 parsimony-informative, 4 singleton sites, 3 constant sites
+                Gap/Ambiguity  Composition  p-value
+   1  WBGene00000232    1.08%    passed     39.75%
+   2  Bm1710a           0.54%    passed     60.35%
+   3  WBGene00001591    3.52%    passed     95.72%
+   4  WBGene00000233    1.36%    passed     81.84%
+   5  WBGene00001593    1.36%    passed     92.04%
+   6  Bm8050            1.36%    passed     89.80%
+   7  WBGene00001592    1.63%    passed     52.59%
+   8  Bm3578            1.36%    passed     92.52%
+   9  WBGene00001594    0.81%    passed      6.39%
+  10  Bm2442            0.81%    passed     47.75%
+  11  WBGene00017389    4.88%    passed     47.49%
+  12  Bm3317            7.59%    passed     13.89%
+  13  WBGene00006784    3.52%    passed     51.01%
+  14  Bm5890a           1.08%    passed     32.75%
+  15  Bm5889            4.07%    passed     61.96%
+  16  WBGene00001512    0.27%    passed     39.03%
+  17  Bm17332           1.63%    passed      6.48%
+  18  WBGene00013914    1.36%    passed     64.39%
+  19  Bm7397a          16.26%    passed     12.40%
+  20  WBGene00008551    0.27%    passed     80.30%
+  21  WBGene00001586    1.36%    passed     37.34%
+  22  WBGene00020767    2.44%    passed     27.50%
+  23  WBGene00008022    3.25%    passed     11.94%
+  24  WBGene00021437    5.69%    passed     19.74%
+  25  WBGene00017314    1.90%    passed     96.59%
+  26  Bm1592            3.25%    passed     66.20%
+  27  WBGene00008076    3.79%    passed     40.20%
+  28  Bm13340          14.63%    passed     63.60%
+  29  WBGene00009790    1.36%    passed     99.20%
+  30  Bm4149            4.34%    passed     51.96%
+  31  WBGene00021146    1.08%    passed     40.04%
+  32  Bm6276            1.08%    passed     38.77%
+  33  WBGene00001373    3.79%    passed     84.97%
+  34  WBGene00012915    5.42%    passed     95.21%
+  35  Bm4689a           4.07%    passed     49.66%
+  36  WBGene00008223    5.96%    passed     70.02%
+  37  WBGene00008280    0.81%    passed     80.33%
+  38  WBGene00010741    1.08%    passed     34.08%
+  39  Bm9057            7.05%    passed     76.13%
+  40  WBGene00018880    1.36%    passed     71.74%
+  41  Bm1077a           2.71%    passed     72.61%
+  42  WBGene00009799    1.90%    passed     37.12%
+  43  Bm4169a           2.44%    passed     64.66%
+  44  WBGene00010275    1.63%    passed     76.84%
+  45  Bm17893           1.90%    passed     81.75%
+  46  WBGene00012099    5.15%    passed     72.04%
+  47  Bm11476           4.61%    passed     82.68%
+  48  WBGene00022106    1.90%    passed     99.81%
+  49  Bm7029a           1.36%    passed     93.21%
+  50  WBGene00017399    2.17%    passed     66.16%
+  51  WBGene00020657    1.08%    passed     90.76%
+  52  Bm5898a           0.54%    passed     98.89%
+  53  WBGene00013517    0.54%    passed     61.01%
+  54  WBGene00020528    0.27%    passed     58.94%
+  55  Bm12502           1.08%    passed     56.43%
+  56  WBGene00003386    3.52%    passed     91.01%
+  57  Bm17830a          1.90%    passed     74.63%
+  58  WBGene00020605    0.81%    passed     74.28%
+  59  Bm5859            1.08%    passed     78.19%
+  60  WBGene00013746    1.63%    passed     97.57%
+  61  Bm7297            1.08%    passed     90.52%
+  62  WBGene00015412    3.52%    passed     75.73%
+  63  WBGene00022247    4.61%    passed     20.58%
+  64  WBGene00000058    2.44%    passed     98.93%
+  65  WBGene00000048    2.71%    passed     86.46%
+  66  WBGene00000050    2.17%    passed     94.21%
+  67  Bm2680a          11.92%    passed     93.77%
+  68  WBGene00000055    3.52%    passed     76.48%
+  69  Bm13586a          2.98%    passed     91.00%
+  70  WBGene00043066    1.90%    passed     43.93%
+  71  WBGene00000049    1.90%    passed     96.15%
+  72  WBGene00000046    0.81%    passed     50.16%
+  73  WBGene00000054    2.98%    passed     80.78%
+  74  Bm11643           4.07%    passed     88.61%
+  75  WBGene00000053    3.25%    passed     89.91%
+  76  WBGene00001133    2.71%    passed     97.75%
+  77  WBGene00002975    2.17%    passed     95.46%
+  78  WBGene00000047    1.08%    passed     53.82%
+  79  Bm7399            1.08%    passed     88.33%
+  80  WBGene00000051    1.90%    passed     42.24%
+  81  Bm5165            5.69%    passed     75.05%
+  82  WBGene00006797    2.98%    passed     76.77%
+  83  Bm7276            1.08%    passed     49.53%
+  84  Bm8014            1.90%    passed     77.47%
+  85  WBGene00006774    1.08%    passed     63.53%
+  86  Bm3490            2.17%    passed     50.71%
+  87  Bm8694            2.17%    passed     94.20%
+  88  WBGene00002974    3.25%    passed     76.65%
+  89  WBGene00006765    3.25%    passed     17.86%
+  90  Bm5680            3.25%    passed     79.64%
+  91  WBGene00000043    3.25%    passed     75.94%
+  92  WBGene00000042    2.71%    passed      5.51%
+  93  WBGene00000045    2.17%    passed     94.66%
+  94  WBGene00000057    1.90%    passed     99.78%
+  95  WBGene00000056    1.08%    passed     21.81%
+  96  WBGene00000060    1.63%    passed     95.97%
+  97  Bm6554a           2.71%    passed     70.21%
+  98  WBGene00000062    0.00%    passed     98.58%
+  99  WBGene00000059    0.54%    passed     69.98%
+ 100  WBGene00000955    1.08%    passed     81.99%
+ 101  Bm6030            0.54%    passed     50.69%
+ 102  WBGene00000951    0.81%    passed     61.05%
+ 103  Bm4782a           1.63%    passed     86.40%
+ 104  WBGene00013534    0.81%    passed     88.06%
+ 105  WBGene00000044    0.81%    passed     73.21%
+ 106  WBGene00017580    0.81%    passed     76.91%
+ 107  Bm10632           1.08%    passed     60.17%
+ 108  WBGene00017375    2.71%    passed     20.49%
+ 109  WBGene00012857    3.52%    failed      0.30%
+ 110  WBGene00000061    2.98%    passed     97.38%
+ 111  WBGene00020048    5.69%    passed     74.84%
+ 112  WBGene00008997    0.81%    passed     47.28%
+ 113  Bm3477            0.81%    passed     31.08%
+ 114  WBGene00019069    2.17%    passed     86.55%
+ 115  Bm4571            2.17%    passed     29.10%
+ 116  WBGene00017543    3.52%    passed     66.10%
+ 117  WBGene00017544    4.61%    passed     78.36%
+ 118  WBGene00013300    1.36%    passed     47.08%
+ 119  WBGene00013338    1.63%    passed     34.77%
+ 120  WBGene00011354    4.61%    passed     49.86%
+ 121  WBGene00013655    4.34%    passed     26.81%
+ 122  WBGene00011358    4.07%    passed     63.74%
+ 123  WBGene00011359    4.07%    passed     44.07%
+ 124  WBGene00011355    4.34%    passed     32.49%
+ 125  WBGene00011356    4.34%    passed     60.12%
+ 126  WBGene00011360    4.34%    passed     40.70%
+ 127  WBGene00020236   10.30%    passed     59.25%
+ 128  WBGene00044528    6.23%    passed     88.20%
+ 129  WBGene00000845    6.23%    passed     24.30%
+ 130  Bm17324           5.42%    passed     78.81%
+ 131  WBGene00010994    5.42%    passed     44.13%
+ 132  WBGene00021981    5.42%    passed     72.39%
+ 133  Bm6921            5.42%    passed     93.42%
+ 134  WBGene00020836    4.61%    passed     13.61%
+ 135  Bm6031            4.88%    passed      9.84%
+ 136  WBGene00007191    7.05%    passed     97.98%
+ 137  Bm1822a           4.61%    passed     96.28%
+ 138  WBGene00022283    7.05%    passed     78.04%
+ 139  Bm7129            6.50%    passed     79.87%
+ 140  WBGene00007903    6.23%    passed     29.40%
+ 141  Bm2541            5.69%    passed     16.69%
+ 142  Bm688            16.26%    passed     70.49%
+ 143  WBGene00007594   10.30%    passed     31.27%
+ 144  WBGene00045385   10.57%    passed     43.17%
+ 145  WBGene00044301    7.59%    passed     67.41%
+ 146  Bm11556          12.20%    passed      5.72%
+ 147  WBGene00021941   15.18%    passed     60.79%
+ 148  Bm6865a          14.36%    passed     49.27%
+ 149  Bm8828            9.49%    passed     61.34%
+ 150  WBGene00017483   10.03%    passed     12.86%
+ 151  WBGene00303021   16.53%    failed      0.00%
+ 152  WBGene00020569   12.47%    passed     54.52%
+****  TOTAL             3.71%  2 sequences failed composition chi2 test (p-value<5%; df=19)
+
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.050 seconds
+Perform fast likelihood tree search using LG+I+G model...
+Estimate model parameters (epsilon = 5.000)
+Perform nearest neighbor interchange...
+Estimate model parameters (epsilon = 1.000)
+1. Initial log-likelihood: -87718.751
+2. Current log-likelihood: -87717.286
+Optimal log-likelihood: -87715.528
+Proportion of invariable sites: 0.008
+Gamma shape alpha: 1.319
+Parameters optimization took 2 rounds (0.266 sec)
+Time for fast ML tree search: 1.046 seconds
+
+NOTE: ModelFinder requires 93 MB RAM!
+ModelFinder will test up to 702 protein models (sample size: 369) ...
+ No. Model         -LnL         df  AIC          AICc         BIC
+  1  LG            90780.555    301 182163.110   184876.603   183340.260
+  2  LG+I          90691.105    302 181986.211   184759.120   183167.271
+  3  LG+G4         87726.889    302 176057.778   178830.687   177238.839
+  4  LG+I+G4       87712.766    303 176031.533   178865.748   177216.504
+  5  LG+R2         88301.505    303 177209.009   180043.225   178393.981
+  6  LG+R3         87857.600    305 176325.201   179288.058   177517.994
+  7  LG+R4         87676.963    307 175967.927   179068.124   177168.542
+  8  LG+R5         87548.303    309 175714.606   178961.725   176923.042
+  9  LG+R6         87515.104    311 175652.208   179056.840   176868.466
+ 10  LG+R7         87487.838    313 175601.676   179175.567   176825.755
+ 11  LG+R8         87476.582    315 175583.165   179339.391   176815.066
+ 12  LG+R9         87471.322    317 175576.644   179529.821   176816.367
+ 24  LG+F+R8       87275.966    334 175219.932   181801.697   176526.138
+ 25  LG+F+R9       87271.460    336 175214.920   182291.920   176528.948
+ 37  WAG+R8        88178.634    315 176987.267   180743.494   178219.168
+ 38  WAG+R9        88171.595    317 176977.189   180930.365   178216.912
+ 50  WAG+F+R8      87530.425    334 175728.850   182310.615   177035.056
+ 51  WAG+F+R9      87524.477    336 175720.953   182797.953   177034.981
+ 63  JTT+R8        88649.278    315 177928.555   181684.781   179160.456
+ 64  JTT+R9        88648.060    317 177930.119   181883.296   179169.842
+ 76  JTT+F+R8      87993.134    334 176654.268   183236.032   177960.474
+ 77  JTT+F+R9      87990.190    336 176652.380   183729.380   177966.407
+ 89  Q.pfam+R8     87553.877    315 175737.753   179493.980   176969.654
+ 90  Q.pfam+R9     87549.619    317 175733.239   179686.415   176972.962
+102  Q.pfam+F+R8   87345.130    334 175358.259   181940.024   176664.465
+103  Q.pfam+F+R9   87338.818    336 175349.635   182426.635   176663.663
+115  Q.bird+R8     90221.853    315 181073.706   184829.932   182305.607
+116  Q.bird+R9     90216.184    317 181066.367   185019.544   182306.090
+128  Q.bird+F+R8   89607.889    334 179883.779   186465.544   181189.985
+129  Q.bird+F+R9   89605.636    336 179883.273   186960.273   181197.300
+141  Q.mammal+R8   89667.473    315 179964.946   183721.173   181196.847
+142  Q.mammal+R9   89663.650    317 179961.301   183914.477   181201.023
+154  Q.mammal+F+R8 89054.481    334 178776.961   185358.726   180083.167
+WARNING: Log-likelihood -89057 of Q.mammal+F+R9 worse than Q.mammal+F+R8 -89054.5
+155  Q.mammal+F+R9 89056.956    336 178785.912   185862.912   180099.940
+167  Q.insect+R8   87630.212    315 175890.424   179646.651   177122.325
+168  Q.insect+R9   87623.334    317 175880.668   179833.844   177120.390
+180  Q.insect+F+R8 87706.116    334 176080.233   182661.997   177386.439
+181  Q.insect+F+R9 87697.804    336 176067.607   183144.607   177381.635
+193  Q.plant+R8    88393.212    315 177416.424   181172.650   178648.325
+WARNING: Log-likelihood -88400.9 of Q.plant+R9 worse than Q.plant+R8 -88393.2
+194  Q.plant+R9    88400.928    317 177435.856   181389.032   178675.578
+206  Q.plant+F+R8  88214.019    334 177096.039   183677.804   178402.245
+WARNING: Log-likelihood -88224.4 of Q.plant+F+R9 worse than Q.plant+F+R8 -88214
+207  Q.plant+F+R9  88224.430    336 177120.861   184197.861   178434.889
+219  Q.yeast+R8    87542.152    315 175714.304   179470.530   176946.204
+220  Q.yeast+R9    87535.639    317 175705.279   179658.455   176945.001
+232  Q.yeast+F+R8  87397.758    334 175463.516   182045.281   176769.722
+233  Q.yeast+F+R9  87387.592    336 175447.184   182524.184   176761.211
+245  JTTDCMut+R8   88661.399    315 177952.798   181709.025   179184.699
+246  JTTDCMut+R9   88660.026    317 177954.053   181907.229   179193.776
+258  JTTDCMut+F+R8 87999.686    334 176667.372   183249.137   177973.578
+259  JTTDCMut+F+R9 87996.813    336 176665.627   183742.627   177979.655
+271  DCMut+R8      89675.370    315 179980.740   183736.966   181212.640
+272  DCMut+R9      89672.788    317 179979.576   183932.753   181219.299
+284  DCMut+F+R8    88265.845    334 177199.691   183781.456   178505.897
+285  DCMut+F+R9    88260.156    336 177192.312   184269.312   178506.340
+297  VT+R8         88046.379    315 176722.759   180478.985   177954.660
+298  VT+R9         88042.700    317 176719.400   180672.576   177959.122
+310  VT+F+R8       87653.222    334 175974.444   182556.208   177280.650
+311  VT+F+R9       87646.062    336 175964.124   183041.124   177278.152
+323  PMB+R8        88220.634    315 177071.268   180827.494   178303.169
+324  PMB+R9        88217.652    317 177069.304   181022.480   178309.026
+336  PMB+F+R8      88116.789    334 176901.578   183483.342   178207.784
+337  PMB+F+R9      88111.888    336 176895.776   183972.776   178209.803
+349  Blosum62+R8   88107.463    315 176844.927   180601.153   178076.827
+350  Blosum62+R9   88103.776    317 176841.552   180794.728   178081.274
+362  Blosum62+F+R8 87920.098    334 176508.196   183089.961   177814.402
+363  Blosum62+F+R9 87917.249    336 176506.497   183583.497   177820.525
+375  Dayhoff+R8    89677.122    315 179984.244   183740.471   181216.145
+376  Dayhoff+R9    89674.507    317 179983.014   183936.190   181222.736
+388  Dayhoff+F+R8  88266.289    334 177200.578   183782.343   178506.784
+389  Dayhoff+F+R9  88260.485    336 177192.969   184269.969   178506.997
+401  mtREV+R8      90895.895    315 182421.791   186178.017   183653.692
+402  mtREV+R9      90884.294    317 182402.588   186355.764   183642.310
+414  mtREV+F+R8    88982.680    334 178633.360   185215.125   179939.566
+415  mtREV+F+R9    88977.565    336 178627.130   185704.130   179941.157
+427  mtART+R8      91254.886    315 183139.772   186895.998   184371.673
+428  mtART+R9      91251.285    317 183136.569   187089.746   184376.292
+440  mtART+F+R8    89444.965    334 179557.929   186139.694   180864.136
+441  mtART+F+R9    89436.715    336 179545.431   186622.431   180859.459
+453  mtZOA+R8      89672.603    315 179975.207   183731.433   181207.108
+454  mtZOA+R9      89664.583    317 179963.165   183916.342   181202.888
+466  mtZOA+F+R8    88371.376    334 177410.753   183992.517   178716.959
+467  mtZOA+F+R9    88365.842    336 177403.685   184480.685   178717.713
+479  mtMet+R8      90423.864    315 181477.729   185233.955   182709.630
+480  mtMet+R9      90420.302    317 181474.604   185427.781   182714.327
+492  mtMet+F+R8    88696.898    334 178061.796   184643.561   179368.003
+493  mtMet+F+R9    88688.041    336 178048.083   185125.083   179362.110
+505  mtVer+R8      91924.986    315 184479.972   188236.199   185711.873
+506  mtVer+R9      91924.921    317 184483.842   188437.018   185723.564
+518  mtVer+F+R8    90045.594    334 180759.189   187340.953   182065.395
+519  mtVer+F+R9    90041.477    336 180754.954   187831.954   182068.981
+531  mtInv+R8      90551.783    315 181733.566   185489.792   182965.467
+532  mtInv+R9      90545.038    317 181724.077   185677.253   182963.799
+544  mtInv+F+R8    88045.015    334 176758.031   183339.795   178064.237
+545  mtInv+F+R9    88037.464    336 176746.928   183823.928   178060.956
+557  mtMAM+R8      92685.225    315 186000.451   189756.677   187232.352
+558  mtMAM+R9      92682.276    317 185998.552   189951.729   187238.275
+570  mtMAM+F+R8    90803.947    334 182275.894   188857.659   183582.100
+571  mtMAM+F+R9    90801.924    336 182275.847   189352.847   183589.875
+583  HIVb+R8       90064.879    315 180759.757   184515.984   181991.658
+584  HIVb+R9       90059.389    317 180752.777   184705.954   181992.500
+596  HIVb+F+R8     89472.687    334 179613.373   186195.138   180919.579
+597  HIVb+F+R9     89469.104    336 179610.208   186687.208   180924.236
+609  HIVw+R8       93338.294    315 187306.587   191062.814   188538.488
+610  HIVw+R9       93326.881    317 187287.761   191240.938   188527.484
+622  HIVw+F+R8     91324.150    334 183316.300   189898.064   184622.506
+623  HIVw+F+R9     91316.038    336 183304.076   190381.076   184618.104
+635  FLU+R8        89354.792    315 179339.585   183095.811   180571.486
+636  FLU+R9        89351.991    317 179337.981   183291.158   180577.704
+648  FLU+F+R8      88861.508    334 178391.015   184972.780   179697.221
+649  FLU+F+R9      88853.764    336 178379.527   185456.527   179693.555
+661  rtREV+R8      88532.601    315 177695.201   181451.428   178927.102
+662  rtREV+R9      88528.536    317 177691.073   181644.249   178930.795
+674  rtREV+F+R8    87732.808    334 176133.617   182715.382   177439.823
+675  rtREV+F+R9    87729.290    336 176130.581   183207.581   177444.608
+687  cpREV+R8      88180.502    315 176991.003   180747.230   178222.904
+688  cpREV+R9      88178.745    317 176991.490   180944.666   178231.212
+700  cpREV+F+R8    87957.940    334 176583.880   183165.645   177890.086
+701  cpREV+F+R9    87956.740    336 176585.480   183662.480   177899.508
+Akaike Information Criterion:           LG+F+R9
+Corrected Akaike Information Criterion: LG+G4
+Bayesian Information Criterion:         LG+F+R8
+Best-fit model: LG+F+R8 chosen according to BIC
+
+All model information printed to LGIC_trim_final.aln.model.gz
+CPU time for ModelFinder: 4849.551 seconds (1h:20m:49s)
+Wall-clock time for ModelFinder: 1230.085 seconds (0h:20m:30s)
+Generating 1000 samples for ultrafast bootstrap (seed: 941427)...
+
+NOTE: 75 MB RAM (0 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -87275.966
+Optimal log-likelihood: -87275.958
+Site proportion and rates:  (0.035,0.036) (0.055,0.191) (0.215,0.359) (0.251,0.617) (0.164,1.062) (0.154,1.594) (0.110,2.339) (0.016,4.950)
+Parameters optimization took 1 rounds (0.535 sec)
+Computing ML distances based on estimated model parameters...
+Computing ML distances took 1.931232 sec (of wall-clock time) 7.629262 sec(of CPU time)
+WARNING: Some pairwise ML distances are too long (saturated)
+Computing RapidNJ tree took 0.003967 sec (of wall-clock time) 0.009545 sec (of CPU time)
+Log-likelihood of RapidNJ tree: -87589.706
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 4.393 second
+Computing log-likelihood of 98 initial trees ... 5.911 seconds
+Current best score: -87275.958
+
+Do NNI search on 20 best initial trees
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -87273.538
+Iteration 10 / LogL: -87293.458 / Time: 0h:0m:26s
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 12: -87267.494
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 15: -87264.962
+Iteration 20 / LogL: -87270.137 / Time: 0h:0m:44s
+Finish initializing candidate tree set (18)
+Current best tree score: -87264.962 / CPU time: 41.443
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 21: -87263.670
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 25: -87263.085
+Iteration 30 / LogL: -87264.334 / Time: 0h:1m:9s (0h:3m:48s left)
+Iteration 40 / LogL: -87264.378 / Time: 0h:1m:27s (0h:3m:10s left)
+Iteration 50 / LogL: -87264.608 / Time: 0h:1m:45s (0h:2m:41s left)
+Log-likelihood cutoff on original alignment: -87318.147
+Iteration 60 / LogL: -87265.097 / Time: 0h:2m:3s (0h:2m:16s left)
+Iteration 70 / LogL: -87263.895 / Time: 0h:2m:22s (0h:1m:53s left)
+Iteration 80 / LogL: -87266.021 / Time: 0h:2m:40s (0h:1m:31s left)
+Iteration 90 / LogL: -87263.526 / Time: 0h:2m:59s (0h:1m:10s left)
+Iteration 100 / LogL: -87264.624 / Time: 0h:3m:17s (0h:0m:49s left)
+Log-likelihood cutoff on original alignment: -87318.147
+NOTE: Bootstrap correlation coefficient of split occurrence frequencies: 1.000
+Iteration 110 / LogL: -87263.479 / Time: 0h:3m:35s (0h:2m:58s left)
+Iteration 120 / LogL: -87264.544 / Time: 0h:3m:50s (0h:2m:35s left)
+TREE SEARCH COMPLETED AFTER 126 ITERATIONS / Time: 0h:4m:1s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -87263.085
+Optimal log-likelihood: -87263.080
+Site proportion and rates:  (0.035,0.036) (0.057,0.193) (0.213,0.361) (0.252,0.616) (0.167,1.070) (0.148,1.600) (0.112,2.322) (0.016,4.892)
+Parameters optimization took 1 rounds (0.465 sec)
+BEST SCORE FOUND : -87263.080
+
+Testing tree branches by SH-like aLRT with 1000 replicates...
+0.451 sec.
+Creating bootstrap support values...
+Split supports printed to NEXUS file LGIC_trim_final.aln.splits.nex
+Total tree length: 130.259
+
+Total number of iterations: 126
+CPU time used for tree search: 908.420 sec (0h:15m:8s)
+Wall-clock time used for tree search: 237.814 sec (0h:3m:57s)
+Total CPU time used: 926.959 sec (0h:15m:26s)
+Total wall-clock time used: 242.700 sec (0h:4m:2s)
+
+Computing bootstrap consensus tree...
+Reading input file LGIC_trim_final.aln.splits.nex...
+152 taxa and 522 splits.
+Consensus tree written to LGIC_trim_final.aln.contree
+Reading input trees file LGIC_trim_final.aln.contree
+Log-likelihood of consensus tree: -87263.077
+
+Analysis results written to: 
+  IQ-TREE report:                LGIC_trim_final.aln.iqtree
+  Maximum-likelihood tree:       LGIC_trim_final.aln.treefile
+  Likelihood distances:          LGIC_trim_final.aln.mldist
+
+Ultrafast bootstrap approximation results written to:
+  Split support values:          LGIC_trim_final.aln.splits.nex
+  Consensus tree:                LGIC_trim_final.aln.contree
+  Screen log file:               LGIC_trim_final.aln.log
+
+Date and Time: Mon Aug  9 01:04:51 2021
