@@ -1,0 +1,33 @@
+# Input data: /staging/groups/zamanian_group/input/$(dir).tar
+# Run: condor_submit RNAseq_bash.sub dir1=210115_DBCHB dir2=210115_DBCHB outdir=scRNABmUT script=RNAseq_bash.sh
+
+# request Zamanian Lab server
+Accounting_Group = PathobiologicalSciences_Zamanian
+
+# load docker image; request execute server with large data staging
+universe = docker
+docker_image = zamanianlab/chtc-singlecell:v1
+Requirements = (Target.HasCHTCStaging == true)
+
+# executable (/home/{net-id}/) and arguments
+executable = $(script)
+arguments = $(dir1) $(dir2) $(outdir)
+
+# log, error, and output files
+log = $(dir)_$(Cluster)_$(Process).log
+error = $(dir)_$(Cluster)_$(Process).err
+output = $(dir)_$(Cluster)_$(Process).out
+
+# transfer files in-out of /home/{net-id}/
+transfer_input_files =
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+# memory, disk and CPU requests
+request_cpus = 60
+request_memory = 300GB
+request_disk = 1200GB
+
+# submit 1 job
+queue 1
+### END
