@@ -4,7 +4,6 @@
 #data wrangling/analysis
 library(tidyverse)
 library(Seurat)
-library(DESeq2)
 library(dplyr)
 
 # plotting
@@ -19,6 +18,7 @@ library(ZamanianLabThemes)
 library(viridis)
 
 #other
+setwd("path/to/directory")
 library(here)
 
 
@@ -43,11 +43,11 @@ dakota <- c("#cd4c42", "#5c8492", "#b25757", "#fe906a", "#6f636b", "#6a9491", "#
 
 
 ####################
-### Fig. 2a - Total utBM UMAP with inset and bar chart
+### Fig. 2a - Total utBM UMAP with bulk vs sc RNA-seq inset
 ####################
 
 # subset data to only the untreated
-data2 <- data2 <- data %>% 
+data2 <- data %>% 
   left_join(counts) %>% 
   left_join(md) %>% 
   subset(counts >= 2.2) %>% 
@@ -62,7 +62,7 @@ data2$integrated_snn_res.0.5 <- factor(data2$integrated_snn_res.0.5, levels = c(
 
 
 #table for cluster numbers on umap
-clusters <- read.csv(here("Figures/Figure_2/fig2a_newlabels.csv"))
+clusters <- read.csv(here("Figures/Figure_2/fig2a_labels.csv"))
 
 
 # plot
@@ -70,6 +70,7 @@ global_plot <- data2 %>%
   ggplot(aes(x = UMAP_1, y = UMAP_2))+
   geom_point(data = data2, aes(color = integrated_snn_res.0.5), size = 0.01, show.legend = FALSE)+
   geom_text(data = clusters, aes(x = x, y = y, label = str_wrap(text, width = 8)), size = 3, fontface = "plain")+
+  geom_segment(data = clusters, aes(x = xline, y = yline, xend = xend, yend = yend), color = "black", size = 0.5)+
   scale_size_area(max_size = 15)+
   #scale_color_manual(values = dakota)+
   scale_color_manual(values = c("#c1d6d3", "#5c8492", "#b25757", "#6a9491", "#7a7f84", "#cab6b2", "#fae2af", "#f3933b","#ac8287", "#65838d", "#82aca7", "#fe906a", "#e3e2e1", "#e89690","#cd4c42", "#6f636b", "#82ac92", "#a26f6a", "#184459", "#596c7f","#263946", "#d97f64", "#a0b4ac", "#e3e2e1", "#fbc1c1", "#7f93a2", "#d76660", "#cac6b9", "#e3e2e1", "#cb8034"), labels = function(color) str_wrap(color, width = 8))+
@@ -164,52 +165,246 @@ global_plot <- global_plot + annotation_custom(ggplotGrob(plot), xmin = -15, xma
 
 
 
-#######################
-### Fig2a - barchart showing cluster percentages to be displayed next to the UMAP
-#######################
-library(scale)
-bar<- data.frame(table(new_combined$integrated_snn_res.0.5))
-colnames(bar)<- c("cluster", "count") 
-bar <- bar %>% 
-  mutate(percent = (count/sum(count)*100)) %>% 
-  mutate(label = (count/sum(count)*100)) %>% 
-  mutate(across(where(is.numeric), round, 1))
 
-bar$label <- paste0(as.matrix(bar$label), "%")
 
-bar$cluster <- factor(bar$cluster, levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"), labels = c("1", "2 - Muscle", "3", "4", "5", "6 - Coelomocyte", "7", "8", "9 - Mesoderm", "10", "11 - Neuron", "12 - Neuron", "13 - Neuron", "14 - Canal-assoc.", "15 - Secretory", "16", "17 - Mesoderm", "18 - Neuron", "19 - Muscle", "20", "21", "22 - Inner body", "23 - Neuron", "24 - Neuron", "25 - Neuron", "26 - Neuron", "27 - Neuron"))
+###################################################################################
+## Figure 2b - Mapping neuron classes (cholinergic, amingergic, GABAergic, etc.) ##
+###################################################################################
+# read in csv with neuron info
+csv <- read.csv(here("Auxillary/neuron_types.csv"))
 
+genes <- csv$gene_id
+genes <- genes[!duplicated(genes)]
+
+#calculate average gene expression per cluster using seurat's DotPlot function
+dot <- DotPlot(new_combined, features = genes, assay = "RNA", scale = FALSE)
+dot <- dot$data
+dot <- rownames_to_column(dot, "genes")
+dot <- dot %>% 
+  mutate(gene_id = substr(genes, 1, 14)) %>% 
+  select(-"genes")
+
+dot <- dot %>% 
+  left_join(csv)
+
+
+#rename clusters
+dot$id<- factor(dot$id, levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"), labels = c("1", "2", "3", "4", "5","6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"))
+
+dot <- dot %>% 
+  mutate(ID = case_when(
+    id == "1" ~ "Unannotated",
+    id == "2" ~ "MS",
+    id == "3" ~ "Unannotated",
+    id == "4" ~ "Unannotated",
+    id == "5" ~ "Unannotated",
+    id == "6" ~ "C",
+    id == "7" ~ "Unannotated",
+    id == "8" ~ "Unannotated",
+    id == "9" ~ "MD",
+    id == "10" ~ "Unannotated",
+    id == "11" ~ "Neuron",
+    id == "12" ~ "Neuron",
+    id == "13" ~ "Neuron",
+    id == "15" ~ "S",
+    id == "14" ~ "CA",
+    id == "16" ~ "Unannotated",
+    id == "17" ~ "MD",
+    id == "18" ~ "Neuron",
+    id == "19" ~ "MS",
+    id == "20" ~ "Unannotated",
+    id == "21" ~ "Unannotated",
+    id == "22" ~ "IB",
+    id == "23" ~ "Neuron",
+    id == "24" ~ "Neuron",
+    id == "25" ~ "Neuron",
+    id == "26" ~ "Neuron",
+    id == "27" ~ "Neuron"))
+
+
+dot$ID <- factor(dot$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron", "Unannotated"))
 
 # plot
-(cluster_plot <- bar %>% ggplot(aes(y = cluster, x = percent, fill = cluster))+
-  geom_bar(stat = "identity", width = 0.5, position = position_dodge(width=0.01))+
-  geom_text(aes(label = label), hjust = -0.2, size = 2.5)+
-  scale_y_discrete(limits = rev(levels(bar$cluster)), expand = c(0,0))+
-  scale_x_continuous(expand = c(0, 0), limits = c(0, 1.5*max(bar$percent)))+
-  scale_fill_manual(values = c("#c1d6d3", "#5c8492", "#b25757", "#6a9491", "#7a7f84", "#cab6b2", "#fae2af", "#f3933b","#ac8287", "#65838d", "#82aca7", "#fe906a", "#e3e2e1", "#e89690","#cd4c42", "#6f636b", "#82ac92", "#a26f6a", "#184459", "#596c7f","#263946", "#d97f64", "#a0b4ac", "#e3e2e1", "#fbc1c1", "#7f93a2", "#d76660", "#cac6b9", "#e3e2e1", "#cb8034"))+
-  labs(x = "Cluster Representation (%)")+
-  theme(panel.background = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.y = element_text(size = 8.5),
-        axis.line.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title.x = element_blank(),
-        axis.line.y = element_blank(),
-        #axis.line.x = element_line(color = "black"),
-        axis.ticks.y = element_blank(),
-        plot.margin = margin(0.1, -0.5, 1.2, -0.5, "cm"),
-        legend.position = "none"))
+(row4 <- dot %>% 
+    ggplot(aes(y = id, x = gene_name))+
+    geom_point(aes(size = pct.exp, color = avg.exp.scaled))+
+    scale_size("Proportion (%)", range = c(-1, 3))+
+    #scale_size_continuous(range = c(-1, 3), nice.breaks = TRUE)+
+    scale_color_viridis()+
+    labs(x = "Genes", y = "Cluster", size = "Proportion (%)", color = "Avg. Exp.")+
+    facet_grid(cols = vars(ID), rows = vars(neurotransmitter), space = "free", scales = "free", drop = TRUE)+
+    theme(text=element_text(family="Helvetica"),
+          panel.background = element_blank(),
+          axis.line = element_line (colour = "black"),
+          legend.background=element_blank(),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, vjust = 1),
+          legend.key = element_blank(),
+          axis.text.x = ggplot2::element_text(size = 8, angle = 90, vjust = 0.5),
+          axis.text.y = ggplot2::element_text(size = 8, hjust = 1, face = "italic"),
+          axis.title.x = ggplot2::element_text(size = 10, vjust = -1),
+          axis.title.y = ggplot2::element_text(size = 10), 
+          strip.text.x = element_text(size = 8),
+          strip.text.y = element_text(size = 8, angle = 0),
+          strip.background = element_blank(),
+          panel.spacing.x = unit(0.5, "lines"), 
+          legend.key.width = unit(0.35, "cm"),
+          legend.key.height = unit(0.25, "cm"),
+          #legend.key.size = unit(0.25, "cm"), 
+          legend.position = "bottom",
+          panel.grid = element_line(color = "#ededed", size = 0.05))+
+    coord_flip()+
+    #guides(size=guide_bins(title= str_wrap("Proportion (%)", width = 13)))+
+    NULL)
 
 
-# plot complete Fig2a panel
+#### Combine Fig2A and Fig2B to create Figure 2
+(Figure2 <- plot_grid(new_plot, row4, nrow = 2, rel_widths = c(1, 1), rel_heights = c(2.2, 1.7), labels = c("A", "B"), label_fontface = "plain")+theme(plot.margin = margin(0.1, 0, 0, 0, "cm")))
 
-(fig2a <- plot_grid(global_plot,NULL, cluster_plot, ncol = 3, rel_widths = c(1.4,0.02, 0.5), scale = c(1,1, 1)))
+# save plot
+ggsave(Figure2, filename = "~/Desktop/Figure2.pdf", device = cairo_pdf, width = 6.5, height = 8, units = "in")
+
+
+##############################################
+########### Supplemental Plots################
+##############################################
+
+
+##################
+### Fig2 - figure supplement 1 - histogram of gene and read counts per cell for annotated clusters
+##################
+
+# genes expressed per cell, median marked in red vertical line @ 230 genes/cell
+genes <- md %>% 
+  ggplot()+
+  geom_histogram(aes(x = nFeature_RNA), bins = 60)+
+  geom_vline(aes(xintercept = median(nFeature_RNA), col = "red"), show.legend = FALSE)+
+  scale_x_continuous(breaks = c(0, 50, 250, 500,750, 1000, 1250, 1500, 1750), expand = c(0, 50))+
+  scale_y_continuous(expand = c(0,0))+
+  labs(x = "Genes per cell", y = "Count")+
+  theme(axis.text = element_text(size = 9),
+        axis.title = element_text(size = 10),
+        plot.background = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(color = "black"))
+
+# reads captured per cell, median marked in red vertical line @ 267 reads/cell
+counts <- md %>% 
+  ggplot()+
+  geom_histogram(aes(x = nCount_RNA), bins = 60)+
+  geom_vline(aes(xintercept = median(nCount_RNA), col = "red"), show.legend = FALSE)+
+  labs(x = "Reads per cell", y = "Count")+
+  scale_x_continuous(breaks = c(0, 50, 250, 500,750, 1000, 1250, 1500, 1750), expand = c(0, 50))+
+  scale_y_continuous(expand = c(0,0))+
+  theme(axis.text = element_text(size = 9),
+        axis.title = element_text(size = 10),
+        plot.background = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(color = "black"))
+
+annotated <- plot_grid(genes, counts, ncol = 2)
+
+ggsave(annotated, filename = "figure2-figuresupplement1.pdf", device = cairo_pdf, width = 6, height = 3, units = "in")
 
 
 
 ##########################
-### Fig2b - Individual umaps for assigned cluster types
+### Fig2 - figure supplement 2 - Orthologous transcription factors and UMAPs of ciliated sensory neuron markers
+##########################
+
+## dataframe of Bma-daf-19 expression
+daf19 <- counts %>% 
+  subset(gene_id == "WBGene00224065") %>% 
+  subset(counts > 0) %>% 
+  left_join(md) %>% 
+  left_join(data)
+
+daf19$cat <- "Bma-daf-19"
+daf19$gene_name <- "daf-19"
+
+
+#### Distribution of genes involved in cilia assembly
+cilia <- read.csv(here("Auxillary/cilia_assembly_genes.csv")) %>% 
+  select("bma_ortho", "bma_genename", "component") %>% 
+  unique()
+
+cilia <- cilia[-4,]
+colnames(cilia) <- c("gene_id", "gene_name", "component")
+
+list <- cilia$gene_id
+
+data2<- data %>%
+  left_join(md) %>% 
+  subset(orig.ident == "utBM") %>% 
+  left_join(counts) %>% 
+  subset(counts >=1) %>% 
+  select("index", "UMAP_1", "UMAP_2","integrated_snn_res.0.5", "orig.ident", "gene_id", "counts") %>% 
+  distinct()
+
+# create dataframe and rename the ciliogenesis functions to make shorter
+umaps <- data2 %>% 
+  filter(gene_id %in% list) %>% 
+  subset(orig.ident == "utBM") %>% 
+  left_join(cilia) %>% 
+  mutate(cat = case_when(
+    component == "Kinesin-II" ~ "Kinesin-II",
+    component == "IFT-dynein" ~ "IFT",
+    str_detect(component, "IFT") ~ "IFT",
+    component == "BBS proteins" ~ "BBS",
+    component == "Motor activators" ~ "Motor activator",
+    component == "Various" ~ "IFT",
+    TRUE ~ component)) %>% 
+  select(-"component")
+
+daf19 <- daf19 %>% select("index", "UMAP_1", "UMAP_2", "integrated_snn_res.0.5", "orig.ident", "gene_id", "gene_name", "cat", "counts")
+
+# add daf19 data to the ciliogenesis genes
+umaps <- rbind(umaps, daf19)
+
+# factor the ciliogenesis genes by function
+umaps$cat <- factor(umaps$cat, levels = c("Bma-daf-19", "IFT", "Kinesin-II", "BBS", "Motor activator"), labels = c("DAF-19", "IFT", "Kinesin-II", "BBS", "Motor activator"))
+
+
+
+# UMAPs for each gene
+figb <- umaps %>%
+  ggplot(aes(x = UMAP_1, y = UMAP_2))+
+  geom_point(data= data2[data2$counts > 4,], size = 0.1, alpha = 0.1, color = "grey")+
+  geom_point(data = subset(umaps, counts > 1 & counts <= 1.5), aes(color = counts), size = 0.5, show.legend = TRUE)+
+  geom_point(data = subset(umaps, counts > 1.5 & counts <= 3), aes(color = counts), size = 0.5, show.legend = TRUE)+
+  geom_point(data = subset(umaps, counts > 3), aes(color = counts), size = 0.5, show.legend = TRUE)+
+  scale_color_viridis(limits = c(1,4))+
+  facet_grid(rows = vars(cat))+
+  labs(color = "Avg. Exp.")+
+  theme(axis.title = element_text(size = 11),
+        plot.title = element_text(hjust = 0.5, vjust = 3),
+        panel.background = element_blank(),
+        strip.background = element_blank(),
+        #strip.placement = "outside",
+        axis.line = element_line(),
+        legend.background=element_blank(),
+        legend.key = element_blank(), 
+        legend.position = "bottom",
+        legend.key.width = unit(0.4, "cm"),
+        legend.key.height = unit(0.25, "cm"),
+        legend.text = element_text(size = 10),
+        legend.title = element_text(vjust =1.1))+
+  NULL
+
+
+
+### put it all together
+sup_fig<- plot_grid(tf_dot, figb, ncol = 2, rel_widths = c(1.25, 0.75), scale = c(1, 0.95), labels = c("A", "B"), label_fontface = "plain")
+
+# save plot
+ggsave(sup_fig, filename = "~/Desktop/figure2_figuresupplement2.pdf", device = cairo_pdf, width = 8.5, height = 10, units = "in")
+
+
+
+##########################
+### Fig2 - figure supplement 3 - Individual expression UMAPs of markers defining cell tyes
 ##########################
 
 table <- data %>% 
@@ -245,7 +440,7 @@ muscle <- muscle %>%
 muscle$type <- "Muscle"
 
 # plot using the fraction of markers expressed as the color gradient
-(muscle_plot <- muscle %>% 
+muscle_plot <- muscle %>% 
   ggplot(aes(x = UMAP_1, y = UMAP_2))+
   geom_point(data= data2, size = 0.1, alpha = 0.1, color = "grey")+
   geom_point(data = subset(muscle, counts <= 3), aes(color = counts), size = 0.5, show.legend = FALSE)+
@@ -268,7 +463,7 @@ muscle$type <- "Muscle"
         legend.key = element_blank(), 
         legend.title = element_blank(),
         panel.spacing.y = unit(6, "cm"))+
-  NULL)
+  NULL
 
 
 # coelomocytes (cluster 5 = 1664 cells)
@@ -494,37 +689,6 @@ mes_plot <- mes %>%
 nonneuronal <- rbind(muscle, IB, coel, canal, mes) 
 nonneuronal$type <- factor(nonneuronal$type, levels = c("Muscle", "Coelomocytes", "Inner body", "Canal-associated", "Mesoderm"))
 
-
-(row2<- nonneuronal %>% 
-  subset(alpha = 1) %>% 
-  ggplot(aes(x = UMAP_1, y = UMAP_2))+
-  geom_point(data= data2, size = 0.1, alpha = 0.1, color = "grey")+
-  geom_point(alpha = 1/10, color = "black", size = 0.25, show.legend = FALSE)+
-  geom_ellipse(data = subset(nonneuronal, type == "Muscle"), aes(x0= -11, y0=1, a = 6, b =3, angle = 0), size = 0.025, inherit.aes = FALSE, color = "black")+
-    geom_ellipse(data = subset(nonneuronal, type == "Coelomocytes"), aes(x0= -1.5, y0=12.5, a = 2, b =2, angle = 0), size = 0.025, inherit.aes = FALSE, color = "black")+
-  geom_ellipse(data = subset(nonneuronal, type == "Inner body"), aes(x0= 9.5, y0=-8.5, a = 2, b = 2, angle = 0), size = 0.025, inherit.aes = FALSE, color = "black")+
-  geom_ellipse(data = subset(nonneuronal, type == "Canal-associated"), aes(x0= -4.5, y0=-12.5, a = 2, b = 2, angle = 0), size = 0.025, inherit.aes = FALSE, color = "black")+
-    geom_ellipse(data = subset(nonneuronal, type == "Mesoderm"), aes(x0= 4.75, y0=5, a = 2, b = 4, angle = 12), size = 0.025, inherit.aes = FALSE, color = "black")+
-  scale_y_continuous(breaks = c(-10, -5, 0, 5, 10, 15))+
-  facet_grid(~type)+
-    theme(legend.position = "bottom",
-          axis.text.x = element_blank(),
-          axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
-          axis.title.x = element_blank(),
-          axis.title.y = ggplot2::element_text(size = 10, color = "white"), 
-          axis.ticks.x = element_blank(),
-          plot.title = element_text(size = 12, hjust = 0.5, vjust = 3),
-          panel.background = element_blank(),
-          axis.line.x = element_blank(),
-          axis.line.y = element_line(color = "black"),
-          legend.title = element_text(size = 10),
-          legend.background=element_blank(),
-          legend.key = element_blank(),
-          strip.background = element_blank(),
-          legend.key.size = unit(0.75, "cm"),
-          legend.key.width = unit(0.75, "cm"))+
-    guides(alpha = "none")+
-    NULL)
 
 
 
@@ -794,128 +958,25 @@ neuronal <- rbind(motor, dva, pan, pep, amine)
 
 neuronal$type <- factor(neuronal$type, levels = c("Pan-neuronal", "Motor", "Interneuron", "Neuropeptidergic", "Aminergic"))
 
-"#b25757"
-(row3<- neuronal %>% 
-  subset(alpha = 1) %>% 
-  ggplot(aes(x = UMAP_1, y = UMAP_2))+
-  geom_point(data= data2, size = 0.1, alpha = 0.1, color = "grey")+
-  geom_point(alpha = 1/10, color = "black", size = 0.25, show.legend = FALSE)+
-  geom_ellipse(data = subset(neuronal, type == "Interneuron"), aes(x0= -3.45, y0=-6.25, a = 1, b = 1.5, angle = 0), size = 0.025, inherit.aes = FALSE, color = "black")+
-  geom_ellipse(data = subset(neuronal, type == "Motor"), aes(x0= -3, y0=-1.5, a = 2, b = 1.5, angle = 0), size = 0.025, inherit.aes = FALSE, color = "black")+
-  facet_grid(~type)+
-  theme(#text=element_text(family="Helvetica"),
-        legend.position = "bottom",
-        axis.text.x = ggplot2::element_text(size = 8,  angle = 45, hjust = 1),
-        axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
-        axis.title.x = ggplot2::element_text(size = 10),
-        axis.title.y = ggplot2::element_text(size = 10, hjust = 1.5), 
-        axis.ticks = element_line(colour = "black"),
-        plot.title = element_text(size = 12, hjust = 0.5),
-        panel.background = element_blank(),
-        axis.line = element_line (colour = "black"),
-        legend.title = element_text(size = 10),
-        legend.background=element_blank(),
-        legend.key = element_blank(),
-        strip.background = element_blank(),
-        legend.key.height = unit(0.75, "cm"),
-        legend.key.width = unit(0.75, "cm"))+
- guides(alpha = "none")+
-  NULL)
+
+# combine the plots to make complete supplemental figure
+row1<- plot_grid(muscle_plot, NULL,legend, ncol = 3, rel_widths = c(0.6, 0.1, 0.3))
+row2 <- plot_grid(coel_plot, NULL, ncol = 2, rel_widths = c(0.8, 0.2))
+row3 <- plot_grid(IB_plot, NULL, ncol = 2, rel_widths = c(0.8, 0.2))
+row4 <- plot_grid(canal_plot, mes_plot, ncol = 2, rel_widths = c(0.6, 0.4))
+row5 <- plot_grid(pan_plot, NULL, ncol = 2, rel_widths = c(0.99, 0.01))
+row6 <- plot_grid(motor_plot, dva_plot, NULL, ncol = 3, rel_widths = c(0.25, 0.25, 0.5))
+row7 <- plot_grid(pep_plot, amine_plot, NULL, ncol = 3, rel_widths = c(0.6, 0.25, 0.15))
+
+
+UMAPS <- plot_grid(row1, row2, row3, row4, row5, row6, row7, nrow = 7)
+
+# save plot
+ggsave(UMAPS, filename = "marker_umaps.pdf", device = cairo_pdf, width = 8, height = 12, units = "in")
 
 
 
 
-
-
-################
-## Figure 2c - Mapping neuron classes (cholinergic, amingergic, GABAergic, etc.)
-###############
-# read in csv with neuron info
-csv <- read.csv(here("Auxillary/neuron_types.csv"))
-
-genes <- csv$gene_id
-genes <- genes[!duplicated(genes)]
-
-#calculate average gene expression per cluster using seurat's DotPlot function
-dot <- DotPlot(new_combined, features = genes, assay = "RNA", scale = FALSE)
-dot <- dot$data
-dot <- rownames_to_column(dot, "genes")
-dot <- dot %>% 
-  mutate(gene_id = substr(genes, 1, 14)) %>% 
-  select(-"genes")
-
-dot <- dot %>% 
-  left_join(csv)
-
-
-#rename clusters
-dot$id<- factor(dot$id, levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"), labels = c("1", "2", "3", "4", "5","6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"))
-
-dot <- dot %>% 
-  mutate(ID = case_when(
-      id == "1" ~ "Unannotated",
-      id == "2" ~ "MS",
-      id == "3" ~ "Unannotated",
-      id == "4" ~ "Unannotated",
-      id == "5" ~ "Unannotated",
-      id == "6" ~ "C",
-      id == "7" ~ "Unannotated",
-      id == "8" ~ "Unannotated",
-      id == "9" ~ "MD",
-      id == "10" ~ "Unannotated",
-      id == "11" ~ "Neuron",
-      id == "12" ~ "Neuron",
-      id == "13" ~ "Neuron",
-      id == "15" ~ "S",
-      id == "14" ~ "CA",
-      id == "16" ~ "Unannotated",
-      id == "17" ~ "MD",
-      id == "18" ~ "Neuron",
-      id == "19" ~ "MS",
-      id == "20" ~ "Unannotated",
-      id == "21" ~ "Unannotated",
-      id == "22" ~ "IB",
-      id == "23" ~ "Neuron",
-      id == "24" ~ "Neuron",
-      id == "25" ~ "Neuron",
-      id == "26" ~ "Neuron",
-      id == "27" ~ "Neuron"))
-
-
-dot$ID <- factor(dot$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron", "Unannotated"))
-
-# plot
-(row4 <- dot %>% 
-  ggplot(aes(y = id, x = gene_name))+
-  geom_point(aes(size = pct.exp, color = avg.exp.scaled))+
-  scale_size("Proportion (%)", range = c(-1, 3))+
-  #scale_size_continuous(range = c(-1, 3), nice.breaks = TRUE)+
-  scale_color_viridis()+
-  labs(x = "Genes", y = "Cluster", size = "Proportion (%)", color = "Avg. Exp.")+
-  facet_grid(cols = vars(ID), rows = vars(neurotransmitter), space = "free", scales = "free", drop = TRUE)+
-  theme(text=element_text(family="Helvetica"),
-    panel.background = element_blank(),
-        axis.line = element_line (colour = "black"),
-        legend.background=element_blank(),
-        legend.text = element_text(size = 8),
-        legend.title = element_text(size = 8, vjust = 1),
-        legend.key = element_blank(),
-        axis.text.x = ggplot2::element_text(size = 8, angle = 90, vjust = 0.5),
-        axis.text.y = ggplot2::element_text(size = 8, hjust = 1, face = "italic"),
-        axis.title.x = ggplot2::element_text(size = 10, vjust = -1),
-        axis.title.y = ggplot2::element_text(size = 10), 
-        strip.text.x = element_text(size = 8),
-        strip.text.y = element_text(size = 8, angle = 0),
-        strip.background = element_blank(),
-        panel.spacing.x = unit(0.5, "lines"), 
-        legend.key.width = unit(0.35, "cm"),
-        legend.key.height = unit(0.25, "cm"),
-        #legend.key.size = unit(0.25, "cm"), 
-        legend.position = "bottom",
-        panel.grid = element_line(color = "#ededed", size = 0.05))+
-  coord_flip()+
-  #guides(size=guide_bins(title= str_wrap("Proportion (%)", width = 13)))+
-  NULL)
 
 
 
@@ -1096,3 +1157,213 @@ ggsave(annotated, filename = "annotated_summary.pdf", device = cairo_pdf, width 
 
 
 
+#########################
+### Fig2 - figure supplement 4 - Pseudobulk analysis
+#########################
+### Pseudobulk analysis of B. malayi mf scRNAseq data
+# read in processed RDS object for pheatmap plotting. RDS object represents all processing between the ## marks below
+centered <- readRDS("~/Library/CloudStorage/Box-Box/ZamanianLab/LabMembers/Clair/project_singlecell/other/bma_mf_pseudobulk.RDS")
+
+################################################################
+# aggregate the raw read counts for utBM and tBM clusters
+split <- SplitObject(new_combined, split.by = "orig.ident")
+
+utBM_agg <- AggregateExpression(split$utBM, assays = "RNA", slot = "counts", verbose = TRUE, )
+utBM_agg <- as.data.frame(utBM_agg$RNA)
+
+tBM_agg <- AggregateExpression(split$tBM, assays = "RNA", slot = "counts", verbose = TRUE, )
+tBM_agg <- as.data.frame(tBM_agg$RNA)
+
+
+#rename columns so utBM and tBM clusters are distinguishable
+colnames(utBM_agg) <- paste(colnames(utBM_agg), "utBM", sep= "_")
+colnames(tBM_agg) <- paste(colnames(tBM_agg), "tBM", sep= "_")
+
+# rename first column in order to combine the two dataframes
+utBM_agg <- rownames_to_column(utBM_agg, var = "gene_id")
+tBM_agg <- rownames_to_column(tBM_agg, var = "gene_id")
+
+
+# leftjoin the two dataframes 
+expression <- utBM_agg %>%  left_join(tBM_agg)
+
+
+### TMM normalization using edgeR
+#turn the dataframe back to a matrix
+rownames(joined) <- joined[,1]
+joined <- joined %>% select(-"gene_id")
+
+# create a vector with the sample names
+samples <- data.frame(samples = colnames(joined))
+samples <-factor(levels = colnames(joined))
+
+# condition
+condition <- samples %>% 
+  mutate(condition = ifelse(grepl('utBM', samples), "Control", "Treated")) %>% 
+  column_to_rownames(var = "samples")
+condition <- factor(condition$condition)       
+
+
+# build the DGEList object
+dge <- DGEList(counts = joined, group=condition, samples = samples)
+
+#normalize the libraries using the default trimmed mean of M values (TMM)
+dge <- calcNormFactors(dge)
+tmm <- cpm(dge)  
+
+
+# remove genes that have < 10 counts
+#filter 1 (require x reads total across all samples)
+keep <- rowSums(tmm) > 10
+tmm <- tmm[keep,]  
+
+# add 1 to each count for log transformation and median-centering
+tmm <- tmm + 1
+
+# log2 transform
+log <- log2(tmm)
+
+#median-center the transformed data
+centered <- t(apply(log,1,function(
+    x){x-median(x)
+}))
+
+# change colnmaes to match the renamed clusters
+colnames(centered) <- c("1_utBM", "2_utBM",  "3_utBM",  "4_utBM",  "5_utBM",  "6_utBM" ,"7_utBM", "8_utBM", "9_utBM",  "10_utBM",  "11_utBM", "12_utBM", "13_utBM", "14_utBM", "15_utBM", "16_utBM", "17_utBM", "18_utBM", "19_utBM", "20_utBM", "21_utBM", "22_utBM", "23_utBM", "24_utBM", "25_utBM", "26_utBM", "27_utBM", "1_tBM", "2_tBM",  "3_tBM",  "4_tBM", "5_tBM", "6_tBM",  "7_tBM", "8_tBM", "9_tBM", "10_tBM", "11_tBM", "12_tBM",  "13_tBM", "14_tBM", "15_tBM", "16_tBM" , "17_tBM",  "18_tBM",  "19_tBM" , "20_tBM", "21_tBM", "22_tBM", "23_tBM", "24_tBM", "25_tBM",  "26_tBM", "27_tBM")
+
+#saveRDS(centered, "~/Library/CloudStorage/Box-Box/ZamanianLab/LabMembers/Clair/project_singlecell/other/bma_mf_pseudobulk.RDS")
+###################################################
+
+
+
+### Heirarchically cluster the genes and "samples"
+library(ClassDiscovery)
+# use the uncentered pearson correlation using the classdiscovery package
+rows <- distanceMatrix(as.matrix(t(centered)), "uncentered correlation")
+rowclus <- hclust(rows, method = "complete") # cluster the genes
+
+cols <- distanceMatrix(as.matrix(centered), "uncentered correlation")
+colclus <- hclust(cols, method = "complete") #cluster the samples
+
+
+## generate heatmap of pseudobulk expression with axis labels
+rg <- max(abs(centered))
+
+setHook("grid.newpage", function() pushViewport(viewport(x=1,y=1,width=0.9, height=0.9, name="vp", just=c("right","top"))), action="prepend")
+
+heatmap <- pheatmap(centered, cluster_rows = rowclus, cluster_cols = colclus, show_rownames = FALSE, color = colorRampPalette(c("deepskyblue", "black", "yellow"))(40), breaks = seq(-rg, rg, length.out = 40))
+
+setHook("grid.newpage", NULL, "replace")
+#add x and y axis labels
+library(grid)
+grid.text("Pseudobulk sample", y = -0.025, gp=gpar(fontsize=13))
+grid.text("Genes", x=-0.025, rot=90, gp=gpar(fontsize=13))
+
+
+# save plot
+ggsave(filename = "~/Desktop/figure2_figuresupplement4.pdf", device = cairo_pdf, width = 7, height = 6.52, units = "in")
+
+
+
+###################
+### Figure 2 - figure supplement 5 - alternate dot plot of normalized transcription per cluster for neuron classes
+##################
+library(Rfast)
+raw <- as_tibble(new_combined@assays[["RNA"]]@counts, rownames = "gene_id") %>% 
+  pivot_longer(!gene_id, names_to = "index", values_to = "counts") # gene expression matrix of raw counts
+
+
+trans <- data %>% 
+  left_join(md) %>% 
+  left_join(raw) %>% 
+  filter(counts > 0) %>% 
+  select("gene_id", "counts", "integrated_snn_res.0.5", "index") %>% 
+  filter(gene_id %in% genes)
+
+tmp <- trans %>% 
+  group_by(integrated_snn_res.0.5) %>% 
+  pivot_wider(names_from = index, values_from = counts)
+
+tmp[is.na(tmp)] <- 0
+
+# calculate the total
+tmp$raw_summed <- rowsums(as.matrix(tmp[,c(-1, -2)])) 
+new <- tmp %>% select("gene_id", "integrated_snn_res.0.5", "raw_summed")
+
+total <- new %>% 
+  group_by(gene_id) %>% 
+  summarise(total = sum(raw_summed)) %>% 
+  left_join(new) %>% 
+  mutate(fraction = ((raw_summed/total)*100)) %>% 
+  left_join(csv)
+
+total$integrated_snn_res.0.5<- factor(total$integrated_snn_res.0.5, levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"), labels = c("1", "2", "3", "4", "5","6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"))
+
+total <- total %>% 
+  mutate(ID = case_when(
+    integrated_snn_res.0.5 == "1" ~ "Unannotated",
+    integrated_snn_res.0.5 == "2" ~ "MS",
+    integrated_snn_res.0.5 == "3" ~ "Unannotated",
+    integrated_snn_res.0.5 == "4" ~ "Unannotated",
+    integrated_snn_res.0.5 == "5" ~ "Unannotated",
+    integrated_snn_res.0.5 == "6" ~ "C",
+    integrated_snn_res.0.5 == "7" ~ "Unannotated",
+    integrated_snn_res.0.5 == "8" ~ "Unannotated",
+    integrated_snn_res.0.5 == "9" ~ "MD",
+    integrated_snn_res.0.5 == "10" ~ "Unannotated",
+    integrated_snn_res.0.5 == "11" ~ "Neuron",
+    integrated_snn_res.0.5 == "12" ~ "Neuron",
+    integrated_snn_res.0.5 == "13" ~ "Neuron",
+    integrated_snn_res.0.5 == "15" ~ "S",
+    integrated_snn_res.0.5 == "14" ~ "CA",
+    integrated_snn_res.0.5 == "16" ~ "Unannotated",
+    integrated_snn_res.0.5 == "17" ~ "MD",
+    integrated_snn_res.0.5 == "18" ~ "Neuron",
+    integrated_snn_res.0.5 == "19" ~ "MS",
+    integrated_snn_res.0.5 == "20" ~ "Unannotated",
+    integrated_snn_res.0.5 == "21" ~ "Unannotated",
+    integrated_snn_res.0.5 == "22" ~ "IB",
+    integrated_snn_res.0.5 == "23" ~ "Neuron",
+    integrated_snn_res.0.5 == "24" ~ "Neuron",
+    integrated_snn_res.0.5 == "25" ~ "Neuron",
+    integrated_snn_res.0.5 == "26" ~ "Neuron",
+    integrated_snn_res.0.5 == "27" ~ "Neuron"))
+
+
+total$ID <- factor(total$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron", "Unannotated"))
+
+
+# plot
+(supp_plot <- total %>% 
+    filter(fraction > 1) %>% 
+    ggplot(aes(y = integrated_snn_res.0.5, x = gene_name))+
+    geom_point(aes(size = fraction, color = neurotransmitter))+
+    scale_size("Total reads (%)", range = c(0, 4), breaks = c(1, 5, 10, 25, 50, 75, 100))+
+    scale_color_manual(values = dakota[3:8])+
+    labs(x = "Genes", y = "Cluster", size = "Total reads (%)")+
+    facet_grid(cols = vars(ID), rows = vars(neurotransmitter), space = "free", scales = "free", drop = TRUE)+
+    theme(#text=element_text(family="Helvetica"),
+      panel.background = element_blank(),
+      axis.line = element_line (colour = "black"),
+      legend.background=element_blank(),
+      legend.text = element_text(size = 8),
+      legend.title = element_text(size = 8, vjust = 1),
+      legend.key = element_blank(),
+      axis.text.x = ggplot2::element_text(size = 8, angle = 90, vjust = 0.5),
+      axis.text.y = ggplot2::element_text(size = 8, hjust = 1, face = "italic"),
+      axis.title.x = ggplot2::element_text(size = 10, vjust = -1),
+      axis.title.y = ggplot2::element_text(size = 10), 
+      strip.text.x = element_text(size = 8),
+      strip.text.y = element_text(size = 8, angle = 0),
+      strip.background = element_blank(),
+      panel.spacing.x = unit(0.5, "lines"), 
+      legend.key.width = unit(0.35, "cm"),
+      legend.key.height = unit(0.25, "cm"),
+      #legend.key.size = unit(0.25, "cm"), 
+      legend.position = "bottom",
+      panel.grid = element_line(color = "#ededed", size = 0.05))+
+    coord_flip()+
+    guides(color= "none"))
+
+
+ggsave(supp_plot, filename = "~/Desktop/Figure2-figuresupplement5.pdf", device = cairo_pdf, width = 6, height = 5, units = "in")

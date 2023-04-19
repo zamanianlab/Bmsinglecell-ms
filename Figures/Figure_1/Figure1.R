@@ -3,8 +3,6 @@
 ############
 #data wrangling/analysis
 library(tidyverse)
-library(Seurat)
-library(DESeq2)
 library(dplyr)
 
 # plotting
@@ -19,6 +17,7 @@ library(ZamanianLabThemes)
 library(viridis)
 
 #other
+setwd("path/to/directory")
 library(here)
 
 ################
@@ -26,7 +25,7 @@ library(here)
 ################
 
 # load illustrator generated workflow scheme
-tmp <-image_read_pdf(here("Figures/Figure_1/bma_sc_workflow_trimmed.pdf", density = 600))
+tmp <-image_read_pdf(here("Figures/Figure_1/bma_sc_workflow_trimmed.pdf"), density = 600)
 Fig1a <- ggdraw() + draw_image(tmp)
 
 
@@ -43,7 +42,7 @@ pd1 <- ggdraw()+
   draw_image(here("sc_protocol/optimization/pd10/20201119-p14-MZ_A01_w2_binary.png"))
 
 pd2 <- ggdraw()+
-  draw_image(here("sc_protocol/optimization/pd10/20210820-p14-NJW_A01_binary.png"))
+  draw_image(here("optimization/pd10/20210820-p14-NJW_A01_binary.png"))
 
 Fig1b <- plot_grid(NULL, pd1,NULL, pd2, ncol = 4, label_size = 12, rel_widths = c(0.2,1, 0.01, 1), label_fontface = "plain", label_fontfamily = "helvetica")
 
@@ -54,11 +53,11 @@ Fig1b <- plot_grid(NULL, pd1,NULL, pd2, ncol = 4, label_size = 12, rel_widths = 
 ################
 
 # load chitinase images = fig1c
-tmp<-image_read(here("sc_protocol/optimization/chitinase/20210325_chitinase_untreated_2.png", density = 200))
+tmp<-image_read(here("optimization/chitinase/20210325_chitinase_untreated_2.png"), density = 200)
 chi1 <- ggdraw() + draw_image(tmp)
 
 
-tmp<-image_read(here("sc_protocol/optimization/chitinase/20210325_chitinase_2mgml_20min.png", density = 200))
+tmp<-image_read(here("optimization/chitinase/20210325_chitinase_2mgml_20min.png"), density = 200)
 chi2 <- ggdraw() + draw_image(tmp)
 
 
@@ -73,36 +72,31 @@ Fig1c <- plot_grid(NULL,chi1,NULL, chi2, ncol = 4, label_size = 12, rel_widths =
 # load pronase time course images and create single panel = fig1d
 
 #15 min
-tmp<-image_read(here("sc_protocol/optimization/pronase/15min_pronase/20220208-p03-CRH_A07_s18_15min.png", density = 300))
+tmp<-image_read(here("optimization/pronase/15min_pronase/20220208-p03-CRH_A07_s18_15min.png"), density = 300)
 pro15.2 <- ggdraw() +
   draw_image(tmp)
 
 
 #20min
-tmp<-image_read(here("sc_protocol/optimization/pronase/20min_pronase/20220208-p03-CRH_B07_s53_20min.png", density = 300))
+tmp<-image_read(here("optimization/pronase/20min_pronase/20220208-p03-CRH_B07_s53_20min.png"), density = 300)
 pro20.2 <- ggdraw() +
   draw_image(tmp)
 
 
 #24min
-tmp<-image_read(here("sc_protocol/optimization/pronase/24min_pronase/20220208-p03-CRH_D07_s7_24min.png", density = 300))
+tmp<-image_read(here("optimization/pronase/24min_pronase/20220208-p03-CRH_D07_s7_24min.png"), density = 300)
 pro24.2 <- ggdraw() +
   draw_image(tmp)
 
 
-#28min
-#pro28.2 <- ggdraw() +
-  #draw_image("28min_pronase/20220208-p03-CRH_F07_s143_28min.png")
-
-
 #30min
-tmp<-image_read(here("sc_protocol/optimization/pronase/30min_pronase/20220208-p03-CRH_G07_s74_30min.png", density = 300))
+tmp<-image_read(here("optimization/pronase/30min_pronase/20220208-p03-CRH_G07_s74_30min.png"), density = 300)
 pro30.2 <- ggdraw() +
   draw_image(tmp)
 
 
 #32min
-tmp<-image_read(here("sc_protocol/optimization/pronase/32min_pronase/20220208-p03-CRH_H07_s16_32min_50um.png", density = 300))
+tmp<-image_read(here("optimization/pronase/32min_pronase/20220208-p03-CRH_H07_s16_32min_50um.png"), density = 300)
 pro32.2 <- ggdraw() +
   draw_image(tmp)
 
@@ -204,23 +198,23 @@ sd(stat$Diameter) # 0.773079 um
 
 # load representative images for each cell classification (single, multiple, debris, es pore-like)
 
-tmp<-image_read_pdf(here("Figures/Figure_1/imagestream/0.9aspectratio/0.9aspectratio_montage.pdf", density = 200))
+tmp<-image_read_pdf(here("Figures/Figure_1/imagestream/0.9aspectratio/0.9aspectratio_montage.pdf"), density = 200)
 IS3.1 <- ggdraw() +
   draw_image(tmp)
 
 
-tmp<-image_read_pdf(here("Figures/Figure_1/imagestream/grayregion_aspectratio/grayregion_montage_2.pdf", density = 200))
+tmp<-image_read_pdf(here("Figures/Figure_1/imagestream/grayregion_aspectratio/grayregion_montage_2.pdf"), density = 200)
 IS3.2 <- ggdraw() +
   draw_image(tmp)
 
 
 
-tmp<-image_read_pdf(here("Figures/Figure_1/imagestream/under0.8_aspectratio/under0.8aspectratio_montage.pdf", density = 200))
+tmp<-image_read_pdf(here("Figures/Figure_1/imagestream/under0.8_aspectratio/under0.8aspectratio_montage.pdf"), density = 200)
 IS3.3 <- ggdraw() +
   draw_image(tmp)
 
 
-tmp <-image_read_pdf(here("Figures/Figure_1/imagestream/espores_montage.pdf", density = 200))
+tmp <-image_read_pdf(here("Figures/Figure_1/imagestream/espores_montage.pdf"), density = 200)
 IS3.4 <- ggdraw() +
   draw_image(tmp)
 
@@ -256,7 +250,6 @@ row5 <- cells
 # Generate complete figure
 Figure1 <- plot_grid(row1, null1, row2, null2, row3, row4, row5, nrow = 7, scale = c(1,1,1, 1, 1, 1,1), rel_heights = c(1, 0.1, 1, 0.025, 1, 1.45, 1))+
   theme(plot.margin = unit(c(0, 0.25, 0, 0), "cm"))
-
 
 
 # export pdf file

@@ -1,12 +1,11 @@
 ############
-## FIG 5 Flow cytometry analysis for drug dose responses
-############
-
+## FIG 5 Expression of anthelmintic targets via UMAP
+########################
+# this script generates many large objects that may need to be removed from the global environment prior to figure export in order avoid aborting the R session due to memory issues
 
 #data wrangling/analysis
 library(tidyverse)
 library(Seurat)
-library(DESeq2)
 library(dplyr)
 
 # plotting
@@ -19,680 +18,805 @@ library(pals)
 library(ggtext)
 library(ZamanianLabThemes)
 library(viridis)
-library(ggforce)
 
 #other
+setwd("path/to/directory")
 library(here)
 
 
-
-
-#################
-### Fig. 5a - Viability workflow (small graphic)
-#################
-Fig5a_diagram <- ggdraw() +
-  draw_image(here("Figures/Figure_5/Fig5a_workflow.png"))
-
-
-
-#################
-### Fig. 5a - spectralflo contour plots of viability
-#################
-Fig5a_flow <- ggdraw() +
-  draw_image(magick::image_read_pdf(here("Figures/Figure_5/viability_flowcytometry.pdf"))
-
-
-
-
-################
-### Fig. 5b - flow cytometry, cell viability over time
-################
-
-via <- read.csv(here("Flow/viability/20220203_viability_curve.csv"))
-
-# calculate % viability
-via <- via %>% 
-  mutate(norm = (viable/total)) 
-
-# plot
-(p1<-via %>% 
-    ggplot(aes(x = incubation, y =  norm, color = treatment))+
-    geom_point(data = subset(via, date == 20220203), size = 1.25)+
-    geom_line(data = subset(via, date == 20220203),size = 0.5)+
-    scale_color_manual(labels = c("DMSO (0.1%)", "Methanol Fixed", "Untreated"), values = c("#DD8D29", "#a2b246", "#65838d"))+
-    scale_y_continuous(labels = scales::percent, breaks = c(0,0.1, 0.2,0.3, 0.4, 0.5, 0.6, 0.7, 0.8), limits = c(0, 0.8), expand = c(0,0))+
-    labs(x = "Timepoint (hr)", y = "Viability", color = "Treatment") +
-    theme(#text = element_text(family = "helvetica"),
-          axis.text.x = ggplot2::element_text(size = 8, hjust = 0.5,face = "plain"),
-          axis.text.y = ggplot2::element_text(size = 8, hjust = 1,face = "plain"),
-          axis.title.x = ggplot2::element_text(size = 8, hjust = 1, vjust = -1,face = "plain"),
-          axis.title.y = ggplot2::element_text(size = 8,face = "plain"), 
-          axis.line = ggplot2::element_line(size = 0.25, colour = "black"),
-          axis.ticks = ggplot2::element_line(size = 0.25), 
-          strip.text = element_text(size = 8,face = "plain"), 
-          legend.text = element_text(size = 8,face = "plain"),
-          legend.title = element_text(size = 8,face = "plain"),
-          legend.key = element_blank(),
-          legend.key.size = unit(0.35, "cm"),
-          legend.margin = margin(0, 0, 0, 4, "cm"),
-          panel.grid.major = element_line(color = "#ededed", size = 0.25),
-          strip.background = element_blank(),
-          panel.background = element_blank(),
-          legend.background = element_blank())+
-    NULL)
-
-# plot violin plot of several DMSO controls
-(p2 <- via %>% 
-    ggplot()+
-    geom_violin(data = subset(via, incubation == 2 & sample == "DMSO"),size = 0.5, aes(x = incubation, y = norm, color = treatment), show.legend = FALSE)+
-    geom_point(data = subset(via, incubation == 2 & sample == "DMSO"), aes(x = incubation, y = norm, color = treatment), size = 1.25, show.legend = FALSE)+
-    scale_color_manual(labels = "DMSO (0.1%)", values = "#DD8D29")+
-    scale_y_continuous(labels = scales::percent, breaks = c(0,0.1, 0.2,0.3, 0.4, 0.5, 0.6, 0.7, 0.8), limits = c(0, 0.8), expand = c(0,0))+
-    scale_x_discrete(limits = 2)+
-    #theme_minimal(base_family = "Helvetica")+
-    theme(axis.text.x = ggplot2::element_text(size = 8, hjust = 0.5,face = "plain"),
-          axis.text.y = element_blank(),
-          axis.title.x = ggplot2::element_text(size = 8,face = "plain", color = "white"), 
-          axis.title.y = ggplot2::element_text(size = 8,face = "plain", color = "white"), 
-          axis.line.x = ggplot2::element_line(size = 0.25, colour = "black"),
-          axis.ticks.x = ggplot2::element_line(size = 0.25), 
-          axis.ticks.y = element_blank(),
-          plot.margin = margin(0.2, 0.5, 0.2, -0.5, "cm"),
-          panel.grid.major = element_line(color = "#ededed", size = 0.25),
-          strip.background = element_blank(),
-          panel.background = element_blank())+
-    NULL)
-
-
-
-viability<- plot_grid(p1 + theme(legend.position = "none"), p2, ncol = 2, rel_widths = c(1, 0.4), rel_heights = c(1, 1))+ theme(plot.margin=margin(0, 0, 0, 0, "cm"))
-
-legend <- get_legend(p1 + theme(legend.margin = margin(0,0,0,4)))
-
-(Fig5b <- plot_grid(viability, legend, ncol = 2, rel_widths = c(1, .2), scale = c(1, 0.1), axis = "t", align = "hv") + theme(plot.margin = margin(0, 1, 0, 0, "cm")))
-
-
-
-
-
-
-################
-### Fig. 5c - drug dose response curves with IVM, LEV, AZS
-################
-
-#read in drug dose response data files for IVM, AZS, and LEV
-# rep1
-ddr_1 <- read.csv(here("Flow/anthelmintics/20211111_bma_mf_ddrc_rep1.csv"))
-
-ddr_1 <- ddr_1 %>% 
-  mutate(treatment = case_when(treatment == "ABS" ~ "AZS",
-                               TRUE ~ as.character(treatment))) 
-
-ddr_1 <- ddr_1 %>% 
-  mutate(treatment = case_when(sample == "DMSO_1" ~ "IVM",
-                               sample == "DMSO_2" ~ "AZS",
-                               sample == "DMSO_3" ~ "LEV",
-                               TRUE ~ as.character(treatment))) %>% 
-  mutate(sample = case_when(sample == "DMSO_1" ~ "DMSO",
-                            sample == "DMSO_2" ~ "DMSO",
-                            sample == "DMSO_3" ~ "DMSO",
-                            TRUE ~ as.character(sample)))
-
-ddr_1 <- ddr_1[,-6]
-ddr_1 <- ddr_1[-c(5,9,14),]
-ddr_1$date <- "20211111"
-
-
-# rep2
-ddr_2 <- read.csv(here("Flow/anthelmintics/20220203_bma_mf_ddrc_slim.csv"))
-
-ddr_2<- ddr_2[,-5]
-colnames(ddr_2)[5] <- "sample"
-
-ddr_2 <- ddr_2[-c(2,7,12, 16),]
-ddr_2$date <- "20220203"
-
-ddr_2 <- ddr_2 %>% 
-  mutate(sample = case_when(sample == "DMSO_1" ~ "DMSO",
-                            sample == "DMSO_2" ~ "DMSO",
-                            sample == "DMSO_3" ~ "DMSO",
-                            TRUE ~ as.character(sample)))
-
-
-# calculate normalization
-ddr_1 <- ddr_1 %>%
-  mutate(perc = (viable/total))
-
-norm_1 <- ddr_1 %>% 
-  group_by(treatment) %>% 
-  filter(sample == "DMSO") %>% 
-  mutate(dmso = perc)
-
-norm_1 <- left_join(ddr_1, norm_1) %>% 
-  group_by(treatment) %>% 
-  fill(dmso,.direction = "downup") %>% 
-  mutate(norm = (perc/dmso))
-
-
-
-
-ddr_2 <- ddr_2 %>% 
-  mutate(perc = (viable/total))
-
-norm_2 <- ddr_2 %>% 
-  group_by(treatment) %>% 
-  filter(sample == "DMSO") %>% 
-  mutate(dmso = perc)
-
-norm_2 <- left_join(ddr_2, norm_2) %>% 
-  group_by(treatment) %>% 
-  fill(dmso,.direction = "downup") %>% 
-  mutate(norm = (perc/dmso))
-
-
-# add final rep for IVM (AZS and LEV have 2 reps, IVM has 3)
-# rep 1
-IVM_1 <- read.csv(here("Flow/anthelmintics/20211021_Bma_mf_ddr_IVM.csv"))
-
-IVM_1 <- IVM_1 %>% 
-  mutate(
-    conc= factor(sample, levels = c("Untreated", "DMSO", "50nM", "1uM", "50uM", "100uM")),
-    conc = case_when(
-      conc == "DMSO" ~ 0.01,
-      conc == "Untreated" ~ 0,
-      conc == "50nM" ~ 0.05,
-      str_detect(conc, "uM") ~ as.numeric(str_remove(conc, "uM"))),
-    date = "20211021")
-
-IVM_1 <- dplyr::select(IVM_1, -group, -vol)
-colnames(IVM_1)[3] <- "stage"
-IVM_1 <- IVM_1[-1,]
-IVM_1 <- IVM_1 %>% 
-  mutate(perc = (viable/total))
-
-# calculate normalization
-norm_3<- IVM_1 %>% 
-  group_by(treatment) %>% 
-  filter(sample == "DMSO") %>% 
-  mutate(dmso = perc)
-
-norm_3 <- left_join(IVM_1, norm_3 ) %>% 
-  fill(dmso,.direction = "up") %>% 
-  mutate(norm = (perc/dmso))
-
-
-# combine the three dataframes
-combined <- rbind(norm_1, norm_2, norm_3)
-
-
-combined$treatment <- factor(combined$treatment, levels = c("AZS", "LEV", "IVM"), labels = c("AZS", "LEV", "IVM"))
-
-# create dataframe for VIM EC50 geom_vline on plot
-vline <- subset(combined, treatment == "IVM")
-vline$x <- 50.97
-
-
-# add function for creating logtick marks for a single facet
-add_logticks  <- function (base = 10, sides = "bl", scaled = TRUE, 
-                           short = unit(0.1, "cm"), mid = unit(0.2, "cm"),  long = unit(0.3, "cm"), 
-                           colour = "black",  size = 0.5, linetype = 1, alpha = 1, color = NULL, 
-                           data =data.frame(x = NA),... )   {
-  if (!is.null(color)) 
-    colour <- color
-  layer(geom = "logticks", params = list(base = base, 
-                                         sides = sides, scaled = scaled, short = short, 
-                                         mid = mid, long = long, colour = colour, size = size, 
-                                         linetype = linetype, alpha = alpha, ...), 
-        stat = "identity", data = data , mapping = NULL, inherit.aes = FALSE,  position = "identity",
-        show.legend = FALSE)
-}
-
-
-x <- data.frame(c("DMSO (0.1%)", "0.10", "1", "10", "100"))
-
-
-#plot
-
-(ddrc<- combined %>% 
-    ggplot(aes(x = conc, y = norm))+
-    geom_point(color = "grey", size = 1, alpha = 0.9, show.legend = FALSE)+
-    geom_line(aes(group = date), color = "grey", size = 0.5, alpha = 0.5, show.legend = FALSE)+
-    stat_summary(data = combined, aes(x = conc, y = norm),geom = "line", fun = "mean", color = "black", size = 0.75)+
-    geom_vline(data = vline, aes(xintercept = x), color = "red", size = 0.5, alpha = 0.75)+
-    facet_grid(rows = vars(treatment))+
-    stat_summary(data = combined, aes(x = conc, y = norm),geom = "point", fun = "mean", color = "black", size = 1.5)+
-    labs(x = expression(paste(~Log[10](Concentration)~ (µM))), y = "Viability (% DMSO Control)")+
-    scale_y_continuous(labels = scales::percent, limits = c(0.25, 1.05), expand = c(0,0))+
-    scale_x_log10(breaks = c(0.01, 0.10, 1, 10, 100), labels = c("DMSO (0.1%)", "0.10", "1", "10", "100"))+
-    #theme_minimal(base_family = "Helvetica")+
-    theme(axis.text.x = ggplot2::element_text(size = 8, hjust = 0.5, vjust = -1,face = "plain"),
-          axis.text.y = ggplot2::element_text(size = 8, hjust = 1,face = "plain"),
-          axis.title.x = element_text(size = 8, vjust = -1,face = "plain"),
-          axis.title.y = ggplot2::element_text(size = 8,face = "plain"), 
-          axis.line = ggplot2::element_line(size = 0.25, colour = "black"),
-          axis.ticks = ggplot2::element_line(size = 0.25), 
-          strip.text = element_text(size = 10,face = "plain"),
-          panel.grid = element_line(color = "#ededed", size = 0.25),
-          strip.background = element_blank(),
-          panel.background = element_blank())+
-    NULL) 
-
-
-# add logtick marks to single facet on the bottom
-
-(Fig5c <- ddrc + 
-  add_logticks(side = "b", data = filter(combined, treatment == "IVM"), short = unit(-0.05, "cm"), mid = unit(-0.1, "cm"), long = unit(-0.2, "cm"), size = 0.25)+
-  coord_cartesian(clip = "off"))
-
-
-
-
-
-
-
-################
-### Fig. 5d - spectralflo contour plots of IVM response
-################
-Fig5d <- ggdraw() +
-  draw_image(magick::image_read_pdf(here("Figures/Figure_5/ivermectin_flowcytometry.pdf"))
-
-
-
-###############
-### Fig. 5e - 10X utBM/tBM UMAP and IVM DEG volcano plot
-###############
+# read in data
 new_combined <- readRDS(here("10XGenomics/scmulti_integrated.RDS"))
 DefaultAssay(new_combined) <- "RNA"
+
+
 # pull out the normalized counts, metadata, and UMAP coordinates into dataframes for plotting in ggplot2
 data <- as_tibble(new_combined@reductions$umap@cell.embeddings, rownames = 'index') # UMAP coordinates for each cell
 
 md <- as_tibble(new_combined@meta.data, rownames = 'index') # metadata detailing ut/t identity and cluster information
 
-counts2 <- as_tibble(new_combined@assays[["RNA"]]@data, rownames = "gene_id") %>%  # gene expression matrix of normalized counts
+counts <- as_tibble(new_combined@assays[["RNA"]]@data, rownames = "gene_id") %>%  # gene expression matrix of normalized counts
   pivot_longer(!gene_id, names_to = "index", values_to = "counts") 
 
 
+# color palette (30 total)
+dakota <- c("#d97f64", "#263946", "#bebab6", "#7a7f84", "#cab6b2", "#fae2af", "#f3933b","#65838d", "#82aca7", "#a0b4ac", "#b5b9b0", "#fbc1c1", "#e89690", "#d76660", "#cac6b9", "#878787", "#cb8034", "#7f93a2", "#ac8287", "#c1d6d3", "#cd4c42", "#5c8492", "#b25757", "#fe906a", "#6f636b", "#6a9491", "#82ac92", "#a26f6a", "#184459", "#596c7f")
 
 
-## UMAP
-data2 <- data %>% 
-  left_join(counts2) %>% 
+
+
+##################
+### Fig 4a - Drug target dot plot
+##################
+# read in csv for anthelmintic targets
+drugs <- read.csv(here("Auxillary/drug_targets.csv"))
+
+genes <- drugs$gene_id
+genes <- genes[!duplicated(genes)]
+
+# use Seurat dotplot function to calculate average gene expression per cluster
+target <- DotPlot(new_combined, features = genes, assay = "RNA", scale = FALSE) 
+target <- target$data 
+target <- rownames_to_column(target, "genes")
+target <- target %>% 
+  mutate(gene_id = substr(genes, 1, 14)) %>% 
+  select(-"genes")
+
+target <- target %>% 
+  left_join(drugs)
+
+# rename clusters
+target$id <- factor(target$id, levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"), labels = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"))
+
+
+target <- target %>% 
+  mutate(ID = case_when(
+    id == "1" ~ "Unannotated",
+    id == "2" ~ "MS",
+    id == "3" ~ "Unannotated",
+    id == "4" ~ "Unannotated",
+    id == "5" ~ "Unannotated",
+    id == "6" ~ "C",
+    id == "7" ~ "Unannotated",
+    id == "8" ~ "Unannotated",
+    id == "9" ~ "MD",
+    id == "10" ~ "Unannotated",
+    id == "11" ~ "Neuron",
+    id == "12" ~ "Neuron",
+    id == "13" ~ "Neuron",
+    id == "15" ~ "S",
+    id == "14" ~ "CA",
+    id == "16" ~ "Unannotated",
+    id == "17" ~ "MD",
+    id == "18" ~ "Neuron",
+    id == "19" ~ "MS",
+    id == "20" ~ "Unannotated",
+    id == "21" ~ "Unannotated",
+    id == "22" ~ "IB",
+    id == "23" ~ "Neuron",
+    id == "24" ~ "Neuron",
+    id == "25" ~ "Neuron",
+    id == "26" ~ "Neuron",
+    id == "27" ~ "Neuron"))
+
+
+
+
+target$ID <- factor(target$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron", "Unannotated"))
+
+target$type <- factor(target$type, levels = c("B-Tubulin", "BK", "GPCR", "LGIC", "GluCl", "ACC", "nAChR", "TRP", "CNG"), labels = c("β-tubulin","BK", "GPCR", "LGIC", "GluCl", "ACC", "nAChR", "TRP", "CNG"))
+
+
+# dotplot of all targets scaled with alpha by expression  
+fig4a <- target %>%
+  ggplot(aes(y = id, x = name))+
+  geom_point(aes(size = pct.exp, color = avg.exp.scaled ))+
+  scale_size("Proportion (%)", range = c(-1, 3))+
+  scale_color_viridis(limits = c(0, 3))+
+  facet_grid(rows = vars(type),cols = vars(ID), space = "free", scales = "free", drop = TRUE)+
+  labs(x = "Gene", y = "Cluster", color = "Avg. Exp.")+
+  #scale_color_manual(values = dakota[20:26])+
+  theme(text = element_text(family = "helvetica"),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 8, vjust = 1.05),
+        panel.background = element_blank(),
+        axis.text.x = ggplot2::element_text(size = 8, angle = 90, vjust = 0.3),
+        axis.text.y = ggplot2::element_text(size = 8, face = "italic"),
+        axis.title.x = ggplot2::element_text(size = 10, face = "plain"),
+        axis.title.y = ggplot2::element_text(size = 10, vjust = -3, face = "plain"), 
+        axis.line = element_line (colour = "black"),
+        legend.background = element_blank(),
+        strip.text.y = element_text(angle=0, size = 8),
+        strip.text.x = element_text(size = 7.5),
+        strip.background = element_blank(),
+        legend.key = element_rect(fill = NA),
+        legend.key.height = unit(0.15, "cm"),
+        legend.key.width = unit(0.15, "cm"),
+        legend.box.background = element_blank(),
+        legend.position = "bottom",
+        legend.margin = margin(0, 0, 0, 0, "cm"),
+        plot.background = element_blank(),
+        panel.spacing.x = unit(0.2, "lines"),
+        panel.spacing.y = unit(0.2, "lines"),
+        panel.grid = element_line(color = "#e0e0e0", size = 0.05), 
+        plot.margin = margin(-0.3, 0, 0, 0, "cm"))+
+  coord_flip()
+
+
+
+
+#####################
+### Fig. 4b - drug target UMAP plots
+#####################
+table <- data %>% 
   left_join(md) %>% 
-  select("index", "UMAP_1", "UMAP_2", "orig.ident") %>% 
-  distinct() %>% 
-  mutate(orig.ident = case_when(
-    orig.ident == "utBM" ~ "Untreated",
-    orig.ident == "tBM" ~ "1 µM IVM"
+  left_join(counts) %>% 
+  subset(counts >= 1.5)
+
+# Glutamate-gated chloride channels (GluCls)
+#subset data to only glucls
+glucl_markers <- c("WBGene00221971", "WBGene00222703", "WBGene00223839", "WBGene00228311")
+glucls <- table %>% 
+  filter(gene_id %in% glucl_markers)
+
+
+#plot glucls
+(glucls_plot <- glucls %>%
+  ggplot(aes(x = UMAP_1, y = UMAP_2))+
+  geom_point(data = data, size = 0.5, alpha = 0.1, color = "grey")+
+  geom_point(aes(color = gene_id), size = 0.25)+
+  scale_color_manual(values = c("#f3933b","#65838d","#b25757", "#e60000"), labels = c("*avr-14*", "*glc-4*", "*glc-2*", "*glc-3*"))+
+  #scale_size(limits = c(0.5, 2.5), name = "Expression")+
+  #annotate(geom = "text", x = 15, y = 0, label = "Macrocyclic lactones", angle = 270, size = 3)+
+  labs(title = "Macrocyclic Lactones")+
+  theme(text = element_text(family = "helvetica"),
+        plot.title = element_markdown(size = 10, hjust = 0.5),
+        panel.background = element_blank(),
+        axis.text.x = ggplot2::element_text(size = 8,  angle = 0, hjust = 1),
+        axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
+        axis.title.x = ggplot2::element_text(size = 10, color = "black"),
+        axis.title.y.left = ggplot2::element_text(size = 10, color = "black"),
+        axis.line.y = element_line (colour = "black"),
+        axis.line.x = element_line(colour = "black"),
+        legend.background=element_blank(),
+        #legend.spacing.x = unit(0.005, "cm"),
+        #legend.spacing = unit(0.1, "lines"),
+        legend.key.height = unit(0.5, "cm"),
+        legend.key.width = unit(0.25, "cm"),
+        legend.key = element_blank(),
+        legend.position = "top",
+        legend.margin = margin(-0.2, -0.5, 0, -1, "cm"),
+        legend.text = element_markdown(size = 8),
+        legend.title = element_blank())+
+  guides(color = guide_legend(override.aes = list(size=2)))+
+  NULL)
+
+# grab plot legend
+glucls_l <- get_legend(glucls_plot)
+
+
+
+
+## Betatubulins 
+#create dataframe subset to only the btubs
+btub_markers <- c("WBGene00229959", "WBGene00224994", "WBGene00228922","WBGene00233027")
+btubs <- table %>% 
+  filter(gene_id %in% btub_markers) 
+
+#plot
+(btubs_plot <- btubs %>%
+  ggplot(aes(x = UMAP_1, y = UMAP_2))+
+  geom_point(data = data, size = 0.5, alpha = 0.1, color = "grey")+
+  geom_point(data = subset(btubs, gene_id == "WBGene00224994" & counts >= 0.5), aes(color = gene_id), size = 0.25)+
+  geom_point(data = subset(btubs, gene_id == list("WBGene00228922", "WBGene00233027")), aes(color = gene_id), size = 0.25)+
+  geom_point(data = subset(btubs, gene_id == "WBGene00229959"), aes(color = gene_id), size = 0.25)+
+  scale_color_manual(values = c("#f3933b","#b25757","#65838d", "#e60000"), labels = c("*btub-1*", "*mec-7*", "*btub-2*", "*tbb-4*"))+
+  scale_size(range = c(0.25, 3), name = "Expression")+
+  labs(title = "Benzimidazoles")+
+    theme(text = element_text(family = "helvetica"),
+          plot.title = element_markdown(size = 10, hjust = 0.5),
+          panel.background = element_blank(),
+          axis.text.x = ggplot2::element_text(size = 8,  angle = 0, hjust = 1),
+          axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
+          axis.title.x = ggplot2::element_text(size = 10, color = "black"),
+          axis.title.y.left = ggplot2::element_text(size = 10, color = "black"),
+          axis.line.y = element_line (colour = "black"),
+          axis.line.x = element_line(colour = "black"),
+          legend.background=element_blank(),
+          #legend.spacing.x = unit(0.005, "cm"),
+          #legend.spacing = unit(0.1, "lines"),
+          legend.key.height = unit(0.5, "cm"),
+          legend.key.width = unit(0.25, "cm"),
+          legend.key = element_blank(),
+          legend.position = "top",
+          legend.margin = margin(-0.2, -0.5, 0, -1, "cm"),
+          legend.text = element_markdown(size = 8),
+          legend.title = element_blank())+
+    guides(color = guide_legend(override.aes = list(size=2)))+
+    NULL)
+ 
+# grab plot legend
+btubs_l <- get_legend(btubs_plot)
+
+
+
+# slo-1 (Emodepside target)
+slo1 <- table %>%
+  filter(gene_id == "WBGene00226980") %>% 
+  subset(counts > 2.5)
+
+
+# plot
+(slo1_plot <- slo1 %>%
+  ggplot(aes(x = UMAP_1, y = UMAP_2))+
+  geom_point(data = data, size = 0.5, alpha = 0.1, color = "grey")+
+  geom_point(data = subset(slo1, gene_id == "WBGene00226980" & counts >= 0.5), aes(color = gene_id), size = 0.25)+
+  scale_color_manual(values = "#65838d", labels = "*slo-1*")+
+  scale_size(range = c(0.1, 3), name = "Expression")+
+  labs(title = "Emodepside")+
+    theme(text = element_text(family = "helvetica"),
+          plot.title = element_markdown(size = 10, hjust = 0.5),
+          panel.background = element_blank(),
+          axis.text.x = ggplot2::element_text(size = 8,  angle = 0, hjust = 1),
+          axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
+          axis.title.x = ggplot2::element_text(size = 10, color = "black"),
+          axis.title.y.left = ggplot2::element_text(size = 10, color = "black"),
+          axis.line.y = element_line (colour = "black"),
+          axis.line.x = element_line(colour = "black"),
+          legend.background=element_blank(),
+          #legend.spacing.x = unit(0.005, "cm"),
+          #legend.spacing = unit(0.1, "lines"),
+          legend.key.height = unit(0.5, "cm"),
+          legend.key.width = unit(0.25, "cm"),
+          legend.key = element_blank(),
+          legend.position = "top",
+          legend.margin = margin(-0.2, -0.5, 0, -1, "cm"),
+          legend.text = element_markdown(size = 8),
+          legend.title = element_blank())+
+    guides(color = guide_legend(override.aes = list(size=2)))+
+    NULL)
+# grab plot legend
+slo1_l <- get_legend(slo1_plot)
+
+
+
+
+# create faceted plot with all three drug target umaps
+# dataframe with all three targets
+glucls$type <- "glucl"
+btubs$type <- "btubs"
+slo1$type <- "slo1"
+
+targets <- rbind(glucls, btubs, slo1) %>% 
+  mutate(gene_name = case_when( 
+    gene_id == "WBGene00221971" ~ "*avr-14*", 
+    gene_id == "WBGene00222703" ~ "*glc-4*",
+    gene_id == "WBGene00223839" ~ "*glc-2*",
+    gene_id == "WBGene00228311" ~ "*glc-3*",
+    gene_id == "WBGene00229959" ~ "*btub-2*",
+    gene_id == "WBGene00224994" ~ "*btub-1*",
+    gene_id == "WBGene00228922" ~ "*mec-7*",
+    gene_id == "WBGene00233027" ~ "*tbb-4*",
+    gene_id == "WBGene00226980" ~ "*slo-1*"))
+
+targets$type  <- factor(targets$type, levels = c("btubs", "slo1", "glucl"), labels = c("Benzimidazoles", "Emodepside", "Macrocyclic lactones"))
+targets$gene_name <- factor(targets$gene_name, levels = c("*avr-14*","*glc-4*", "*glc-2*","*glc-3*","*btub-1*","*mec-7*", "*btub-2*","*tbb-4*", "*slo-1*"), labels = c("*avr-14*","*glc-4*", "*glc-2*","*glc-3*","*btub-1*","*mec-7*", "*btub-2*","*tbb-4*", "*slo-1*"))
+
+
+
+
+#plot faceted plot
+targets_plot <- targets %>%
+  ggplot(aes(x = UMAP_1, y = UMAP_2))+
+  geom_point(data = data[sample(nrow(data), 10000),], size = 0.5, alpha = 0.1, color = "grey")+
+  geom_point(data = subset(targets, gene_name == "*btub-1*" & counts > 0.5), aes(color =gene_name), size = 0.25, show.legend = FALSE)+
+  geom_point(data = subset(targets, !gene_name == "*btub-2*"), aes(color = gene_name), size = 0.25, show.legend = FALSE)+
+  geom_point(data = subset(targets, type == "Macrocyclic lactones"), aes(color = gene_name), size = 0.25, show.legend = FALSE)+
+  geom_point(data = subset(targets, gene_id == "WBGene00224994" & counts >= 0.5), aes(color = gene_name), size = 0.25, show.legend = FALSE)+
+  geom_point(data = subset(targets, gene_id == list("WBGene00228922", "WBGene00233027")), aes(color = gene_name), size = 0.25, show.legend = FALSE)+
+  geom_point(data = subset(targets, gene_id == "WBGene00229959"), aes(color = gene_name), size = 0.25, show.legend = FALSE)+             
+  geom_point(data = subset(targets, gene_id == "WBGene00226980" & counts >= 0.5), aes(color = gene_name), size = 0.25, show.legend = FALSE)+            
+  scale_color_manual(values = c("#f3933b", "#f3933b","#65838d","#b25757", "#e60000", "#65838d","#b25757","#65838d", "#e60000"))+
+  facet_grid(cols = vars(type))+
+  theme(#text = element_text(family = "Helvetica"),
+        #plot.title = element_markdown(size = 10, hjust = 0.75),
+        legend.text = element_markdown(size = 8),
+        legend.title = element_blank(),
+        panel.background = element_blank(),
+        axis.text.x = ggplot2::element_text(size = 8),
+        axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
+        axis.title.x = ggplot2::element_text(size = 10, color = "black"),
+        axis.title.y = ggplot2::element_text(size = 10, color = "black"), 
+        axis.line.y = element_line (colour = "black"),
+        axis.line.x = element_line (colour = "black"),
+        legend.background=element_blank(),
+        legend.key = element_blank(),
+        panel.spacing.y = unit(1.5, "lines"),
+        strip.background = element_blank(), 
+        strip.text = element_text(size = 10),
+        plot.margin = margin(0, 0, 0, 0, "cm"))+
+  guides(color = guide_legend(override.aes = list(size=1)))
+
+
+
+# combine all plot legends
+legends <- plot_grid(btubs_l, slo1_l,glucls_l,  ncol = 3) 
+
+
+# combine all faceted umaps and legends for Fig 4b
+(fig4b <- plot_grid(targets_plot, legends, ncol = 2, rel_widths = c(1, 0.3), rel_heights = c(1, 0), scale = c(1, 0.7))+ theme(plot.margin = margin(-0.4, 0, 3, 0, "cm")))
+
+fig4b <- plot_grid(btubs_plot, slo1_plot, glucls_plot, ncol = 3, labels = c("B", "", ""), label_fontface = "plain", label_fontfamily = "helvetica", label_size = 12, vjust = 0.5)+theme(plot.margin = margin(0, 0.05, 0, 0.05, "cm"))
+
+
+
+
+
+
+#######################
+## Fig 4c. - Co-expression plots for GluCls, nicotinic subunits and btubs
+######################
+## building the trees
+library(ggtree)
+library(tidytree)
+library(treeio)
+library(ape)
+library(dplyr)
+library(stringr)
+
+
+# load in Bma and Cel ids
+Bma.id <- read.csv(here("Auxillary/Bma.Proteins.csv"),
+                   header = FALSE, sep = ",")
+colnames(Bma.id) <-  c("protein_id", "gene_id", "gene_name") 
+Bma.id <- Bma.id %>% 
+  group_by(gene_id, gene_name) %>%
+  distinct(gene_id, .keep_all = TRUE)
+Bma.protein.list <- unique(Bma.id$protein_id)
+
+Cel.id <- read.csv(here("Auxillary/Cel.Proteins.csv"),
+                   header = FALSE, sep = ",")
+colnames(Cel.id) <-  c("protein_id", "gene_id", "gene_name") 
+Cel.id <- Cel.id %>% 
+  group_by(gene_id,gene_name) %>%
+  distinct(gene_id, .keep_all=TRUE)
+Cel.gene.list <- unique(Cel.id$gene_id)
+Cel.protein.list <- unique(Cel.id$protein_id)
+
+all_id <- bind_rows(Bma.id, Cel.id) %>% 
+  mutate(label = case_when(
+    str_detect(protein_id, 'Bm') == TRUE ~ protein_id,
+    TRUE ~ gene_id)
+  )
+
+# read in iqtree file
+lgic.phylo <- read.iqtree(here("Phylogenetics/lgics/tree/LGIC_trim_final.aln.treefile"))
+
+# convert tree (phylo object) to tibble (relabel) and generate d1 with other data
+d1 <- as_tibble(lgic.phylo) %>% 
+  mutate(species = case_when(
+    label %in% Bma.protein.list ~ 'Bma',
+    label %in% Cel.gene.list ~ 'Cel'
+  )) %>% 
+  left_join(., all_id) %>% 
+  mutate(tiplab = case_when(
+    is.na(gene_name) == TRUE ~ protein_id,
+    TRUE ~ gene_name
   ))
 
-umap <- data2 %>%
-  ggplot(aes(x = UMAP_1, y = UMAP_2))+
-    geom_point(aes(color = orig.ident), size = 0.005, alpha = 1/10, show.legend = FALSE)+
- scale_color_manual(values = c("#f3933b", "#65838d"), labels = c("IVM (1 µM)", "Untreated"))+
-  labs( color = NULL)+
-  facet_wrap(~orig.ident, ncol = 1)+
-  geom_text(data = data2, mapping = aes(x = -9, y = 8, label = orig.ident, fontface = "plain"), check_overlap = TRUE, family = "Helvetica", size = 2.5)+
-  theme(#text = element_text(family = "Helvetica"),
-        #axis.text.x = ggplot2::element_text(size = 8, face = "plain"),
-        #axis.text.y = ggplot2::element_text(size = 8, face = "plain"),
-        #axis.title.x = ggplot2::element_text(size = 10, face = "plain"),
-        #axis.title.y = ggplot2::element_text(size = 10, face = "plain"), 
-        #axis.line = element_line (colour = "black"),
-        axis.text = element_blank(),
-        axis.title = element_blank(),
-        axis.line = element_blank(),
-        axis.ticks = element_blank(),
-        legend.text = element_markdown(size = 10, face = "plain"),
-        legend.background=element_blank(),
-        legend.key = element_blank(),
-        legend.key.height = unit(0.5, "cm"),
-        legend.key.width = unit(0.5, "cm"),
-        panel.background = element_blank(),
-        strip.text = element_blank(),
-        plot.margin = margin(0, -0.2, 0, -0.2, "cm"))
+#read lgics in from tree (first run code further down to get d1)
+lgics <- d1 %>% dplyr::filter(species == "Bma")
+lgic.list <- unique(lgics$gene_id)
+
+gene_counts <- counts %>% 
+  dplyr::filter(gene_id %in% lgic.list) %>% 
+  dplyr::select(gene_id, index, counts) %>%
+  pivot_wider(names_from = index, values_from = counts) %>%
+  column_to_rownames(var = "gene_id")
 
 
 
-# Differential gene expression analysis IVM(+) vs untreated
-
-# LOAD RDS BELOW!  -- the following clusters did not have features that passed the logfc.threshold of 0.25.   Positive avg_logFC indicates the gene is more highly expressed in the first group
-response <- readRDS(here("Figures/Figure_5/IVM_response.RDS"))
-
-
-#-------------------------------------------------------------------------------------
-BM_combined1 <- new_combined
-# find markers between the two treatment groups to look at possible effects of IVM
-BM_combined1$celltype.trt <- paste(Idents(BM_combined1), BM_combined1$orig.ident, sep= "_")   #create meta.data slot to store both the cell type and treatment information
-BM_combined1$celltype <- Idents(BM_combined1)
-Idents(BM_combined1) <- "celltype.trt"
+# generate matrix (no scale normalization)
+matrix_heatmap <- function (df) {
+  df.m <- data.matrix(df, rownames.force = TRUE)
+  ind <- apply(df.m, 1, var) == 0  #remove genes with no variance 
+  df.m <- df.m[!ind,]
+  #df.m <- log2(df.m+1) 
+  #df.m <- t(scale(t(df.m),center=TRUE,scale=TRUE))
+  return(df.m)
+}
+gene_counts <- matrix_heatmap(gene_counts)
 
 
 
-IVM_response1 <- FindMarkers(BM_combined1, ident.1 = "0_tBM", ident.2 = "0_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response1 <- rownames_to_column(IVM_response1, var = "gene_id")
-IVM_response1['Cluster'] <- "1"
-
-IVM_response2 <- FindMarkers(BM_combined1, ident.1 = "1_tBM", ident.2 = "1_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response2 <- rownames_to_column(IVM_response2, var = "gene_id")
-IVM_response2['Cluster'] <- "2"
-
-IVM_response3 <- FindMarkers(BM_combined1, ident.1 = "2_tBM", ident.2 = "2_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response3 <- rownames_to_column(IVM_response3, var = "gene_id")
-IVM_response3['Cluster'] <- "3"
-
-IVM_response4 <- FindMarkers(BM_combined1, ident.1 = "3_tBM", ident.2 = "3_utBM",test.use = "t", verbose = TRUE, logfc.threshold = 0)
-IVM_response4 <- rownames_to_column(IVM_response4, var = "gene_id")
-IVM_response4['Cluster'] <- "4"
-
-IVM_response5 <- FindMarkers(BM_combined1, ident.1 = "4_tBM", ident.2 = "4_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response5 <- rownames_to_column(IVM_response5, var = "gene_id")
-IVM_response5['Cluster'] <- "5"
-
-IVM_response6 <- FindMarkers(BM_combined1, ident.1 = "5_tBM", ident.2 = "5_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response6 <- rownames_to_column(IVM_response6, var = "gene_id")
-IVM_response6['Cluster'] <- "6"
-
-IVM_response7 <- FindMarkers(BM_combined1, ident.1 = "6_tBM", ident.2 = "6_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response7 <- rownames_to_column(IVM_response7, var = "gene_id")
-IVM_response7['Cluster'] <- "7"
-
-IVM_response8 <- FindMarkers(BM_combined1, ident.1 = "7_tBM", ident.2 = "7_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response8 <- rownames_to_column(IVM_response8, var = "gene_id")
-IVM_response8['Cluster'] <- "8"
-
-IVM_response9 <- FindMarkers(BM_combined1, ident.1 = "8_tBM", ident.2 = "8_utBM", verbose = TRUE,logfc.threshold = 0)
-IVM_response9 <- rownames_to_column(IVM_response9, var = "gene_id")
-IVM_response9['Cluster'] <- "9"
-
-IVM_response10 <- FindMarkers(BM_combined1, ident.1 = "9_tBM", ident.2 = "9_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response10 <- rownames_to_column(IVM_response10, var = "gene_id")
-IVM_response10['Cluster'] <- "10"
-
-IVM_response11 <- FindMarkers(BM_combined1, ident.1 = "10_tBM", ident.2 = "10_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response11 <- rownames_to_column(IVM_response11, var = "gene_id")
-IVM_response11['Cluster'] <- "11"
-
-IVM_response12 <- FindMarkers(BM_combined1, ident.1 = "11_tBM", ident.2 = "11_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response12 <- rownames_to_column(IVM_response12, var = "gene_id")
-IVM_response12['Cluster'] <- "12"
-
-IVM_response13 <- FindMarkers(BM_combined1, ident.1 = "12_tBM", ident.2 = "12_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response13 <- rownames_to_column(IVM_response13, var = "gene_id")
-IVM_response13['Cluster'] <- "13"
+# correlation matrix on transposed counts (columns = genes)
+library(Hmisc)
+gene_counts.t <- t(gene_counts)
+cor <- rcorr(gene_counts.t, type = c("pearson","spearman"))
+cor.r <- as.data.frame(cor$r) %>%
+  rownames_to_column(var = "gene_id") %>%
+  pivot_longer(cols=2:52, names_to = "gene_id_2", values_to = "corr") %>%
+  transmute(from = pmin(gene_id, gene_id_2), to = pmax(gene_id, gene_id_2), corr) %>%
+  distinct()
 
 
-IVM_response14 <- FindMarkers(BM_combined1, ident.1 = "13_tBM", ident.2 = "13_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response14 <- rownames_to_column(IVM_response14, var = "gene_id")
-IVM_response14['Cluster'] <- "14"
+#reroot
+lgic.phylo <- ape::root(lgic.phylo, node = 214)
 
-IVM_response15 <- FindMarkers(BM_combined1, ident.1 = "14_tBM", ident.2 = "14_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response15 <- rownames_to_column(IVM_response15, var = "gene_id")
-IVM_response15['Cluster'] <- "15"
-
-IVM_response16 <- FindMarkers(BM_combined1, ident.1 = "15_tBM", ident.2 = "15_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response16 <- rownames_to_column(IVM_response16, var = "gene_id")
-IVM_response16['Cluster'] <- "16"
+(node_labels <- ggtree(lgic.phylo, layout = "circular", branch.length = "none") %<+% d1 +
+    geom_text2(aes(subset = !isTip, label = node), size = 2, hjust = -.3) +
+    geom_text2(aes(subset = !isTip, label = UFboot, color = UFboot), size = 2, hjust = -.3, vjust = 3) +
+    geom_tiplab(aes(label = tiplab)) +
+    theme_tree2() +
+    NULL)
 
 
-IVM_response17 <- FindMarkers(BM_combined1, ident.1 = "16_tBM", ident.2 = "16_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response17 <- rownames_to_column(IVM_response17, var = "gene_id")
-IVM_response17['Cluster'] <- "17"
+# prepare correlation data
+cor_tree <- cor.r %>% 
+  left_join(., select(d1, gene_id, tiplab), by = c('from' = 'gene_id')) %>% 
+  rename(from_gene_id = tiplab) %>% 
+  left_join(., select(d1, gene_id, tiplab), by = c('to' = 'gene_id')) %>%
+  rename(to_gene_id = tiplab) %>% 
+  select(from = from_gene_id, to = to_gene_id, corr)
 
 
-IVM_response18 <- FindMarkers(BM_combined1, ident.1 = "17_tBM", ident.2 = "17_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response18 <- rownames_to_column(IVM_response18, var = "gene_id")
-IVM_response18['Cluster'] <- "18"
+# subset tree (glc)
+glc.phylo <- tree_subset(lgic.phylo, node = 161, levels_back = 0) 
+glc.tibble <- as_tibble(glc.phylo) %>% 
+  left_join(., d1, by = 'label') %>% 
+  select(!contains('.y')) %>% 
+  rename(node = node.x) %>% 
+  dplyr::slice(1:10) %>%
+  mutate(newlab = str_remove(tiplab, "Bma-"))
 
-IVM_response19 <- FindMarkers(BM_combined1, ident.1 = "18_tBM", ident.2 = "18_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response19 <- rownames_to_column(IVM_response19, var = "gene_id")
-IVM_response19['Cluster'] <- "19"
+glc_cor <- cor_tree %>% 
+  filter(from %in% glc.tibble$tiplab & to %in% glc.tibble$tiplab) %>%
+  filter(from != to) %>% 
+  filter(corr > 0) %>%
+  mutate(color = cut(corr, 9, labels = LETTERS[1:9]))
 
-IVM_response20 <- FindMarkers(BM_combined1, ident.1 = "19_tBM", ident.2 = "19_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response20 <- rownames_to_column(IVM_response20, var = "gene_id")
-IVM_response20['Cluster'] <- "20"
+glc.phylo@phylo$tip.label <- glc.tibble$tiplab
+glc.phylo@data$SH_aLRT <- 0.1
 
-
-IVM_response21 <- FindMarkers(BM_combined1, ident.1 = "20_tBM", ident.2 = "20_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response21 <- rownames_to_column(IVM_response21, var = "gene_id")
-IVM_response21['Cluster'] <- "21"
-
-IVM_response22 <- FindMarkers(BM_combined1, ident.1 = "21_tBM", ident.2 = "21_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response22 <- rownames_to_column(IVM_response22, var = "gene_id")
-IVM_response22['Cluster'] <- "22"
-
-IVM_response23 <- FindMarkers(BM_combined1, ident.1 = "22_tBM", ident.2 = "22_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response23 <- rownames_to_column(IVM_response23, var = "gene_id")
-IVM_response23['Cluster'] <- "23"
-
-IVM_response24 <- FindMarkers(BM_combined1, ident.1 = "23_tBM", ident.2 = "23_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response24 <- rownames_to_column(IVM_response24, var = "gene_id")
-IVM_response24['Cluster'] <- "24"
-
-IVM_response25 <- FindMarkers(BM_combined1, ident.1 = "24_tBM", ident.2 = "24_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response25 <- rownames_to_column(IVM_response25, var = "gene_id")
-IVM_response25['Cluster'] <- "25"
-
-
-IVM_response26 <- FindMarkers(BM_combined1, ident.1 = "25_tBM", ident.2 = "25_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response26 <- rownames_to_column(IVM_response26, var = "gene_id")
-IVM_response26['Cluster'] <- "26"
-
-IVM_response27 <- FindMarkers(BM_combined1, ident.1 = "26_tBM", ident.2 = "26_utBM", verbose = TRUE, logfc.threshold = 0)
-IVM_response27 <- rownames_to_column(IVM_response27, var = "gene_id")
-IVM_response27['Cluster'] <- "27"
-
-
-response <- rbind(IVM_response1, IVM_response2, IVM_response3,IVM_response4, IVM_response5, IVM_response6, IVM_response7, IVM_response8, IVM_response9, IVM_response10, IVM_response11, IVM_response12, IVM_response13, IVM_response14, IVM_response15, IVM_response16, IVM_response17, IVM_response18, IVM_response19, IVM_response20, IVM_response21, IVM_response22, IVM_response23, IVM_response24, IVM_response25, IVM_response26, IVM_response27)
-
-#saveRDS(response, "~/Desktop/IVM_response.RDS")
+(glc.tree <- ggtree(glc.phylo, layout = 'inward_circular', branch.length = 'SH_aLRT', xlim = 3) %<+% glc.tibble +
+    geom_tippoint(aes(fill = species),
+                  shape = 21,
+                  size = 2) +
+    geom_taxalink(data = glc_cor, mapping = aes(taxa1 = from, taxa2 = to,color = color),
+                  size = 1,
+                  ncp = 2,
+                  offset = 1.1,
+                  outward = FALSE,
+                  alpha = 0.8) +
+    geom_tiplab(aes(label = newlab),
+                size = 3,
+                align = TRUE,
+                linesize = 0,
+                linetype = 0,
+                offset = -1,
+                hjust = 0,
+                fontface = 'italic') +
+    scale_color_brewer(palette = 'Reds') +
+    scale_fill_manual(values = c('black', 'white')) +
+    theme(legend.position = "empty")+
+    NULL)
+#save_plot('glc_tree.pdf', glc.tree, base_height = 12)
+#ggsave(glc.tree, filename = "~/Desktop/glc.tree.pdf", device = cairo_pdf, width = 3, height = 3)
+glc <- ggdraw() +
+  draw_image(magick::image_read_pdf(here("Figures/Figure_5/glc.tree.pdf")))
 
 
-#-----------------------------------------------------------------------------
-
-# add the bma gene names
-list <- read.csv(here("Auxillary/gene_list.csv")) %>%
-  select("Gene.stable.ID", "Gene.name")
-colnames(list)[1] <- "gene_id"
-list <- unique(list)
-response <- response %>% left_join(list)
-
-# subset response to only those with significant adjusted p-value
-tmp <- response %>% 
-  subset(avg_log2FC >= 1 & -log10(p_val_adj) >= -log(0.05))
-
-tmp <- response %>% 
-  filter(avg_log2FC >= 1 | avg_log2FC <= -1) %>% 
-  filter(-log10(p_val_adj) >= -log(0.05) | -log10(p_val_adj) <= -log(0.05))
 
 
-response <- response %>% 
+# subset tree (nachr)
+
+nachr.phylo <- tree_subset(lgic.phylo, node = 241, levels_back = 0) 
+nachr.tibble <- as_tibble(nachr.phylo) %>% 
+  left_join(., d1, by = 'label') %>% 
+  select(!contains('.y')) %>% 
+  rename(node = node.x) %>% 
+  dplyr::slice(1:30) %>%
+  mutate(newlab = str_remove(tiplab, "Bma-"))
+
+nachr_cor <- cor_tree %>% 
+  filter(from %in% nachr.tibble$tiplab & to %in% nachr.tibble$tiplab) %>%
+  filter(from != to) %>% 
+  filter(corr > 0) %>% 
+  # remove isoform links
+  separate(from, into = c('from', 'from_isoform'), sep = '\\.') %>% 
+  separate(to, into = c('to', 'to_isoform'), sep = '\\.') %>% 
+  filter(from != to) %>% 
+  mutate(to_isoform = case_when(
+    is.na(to_isoform) == TRUE ~ '',
+    TRUE ~ to_isoform
+  )) %>% 
+  mutate(from_isoform = case_when(
+    is.na(from_isoform) == TRUE ~ '',
+    TRUE ~ from_isoform
+  )) %>% 
+  mutate(
+    from = str_c(from, from_isoform, sep = '.'),
+    to = str_c(to, to_isoform, sep = '.')
+  ) %>% 
+  mutate(
+    from = str_remove(from, '\\.$'), 
+    to = str_remove(to, '\\.$')
+  ) %>% 
+  select(from, to, corr) %>% 
+  mutate(color = cut(corr, 10, labels = LETTERS[1:10])) 
+
+nachr.phylo@phylo$tip.label <- nachr.tibble$tiplab
+
+(nachr.tree <- ggtree(nachr.phylo, layout = 'inward_circular', xlim = 5) %<+% nachr.tibble +
+    geom_tippoint(aes(fill = species),
+                  shape = 21,
+                  size = 2) +
+    geom_taxalink(data = nachr_cor, mapping = aes(taxa1 = from, taxa2 = to,color = color),
+                  size = 1,
+                  ncp = 2,
+                  offset = 1.1,
+                  outward = FALSE,
+                  alpha = 0.8
+    ) +
+    geom_tiplab(aes(label = newlab),
+                size = 3.5,
+                align = TRUE,
+                linesize = 0,
+                linetype = 0,
+                offset = -1,
+                hjust = 0,
+                fontface = 'italic') +
+    scale_color_brewer(palette = 'Reds') +
+    scale_fill_manual(values = c('black', 'white')) +
+    theme(legend.position = "empty")+
+    NULL)
+#save_plot('nachr.tree.pdf', plot_grid(nachr.tree), base_height = 3)
+#ggsave(nachr.tree, filename = "~/Desktop/nachr_tree.pdf", device = cairo_pdf, width = 5, height = 5)
+nachr<- ggdraw() +
+  draw_image(magick::image_read_pdf(here("Figures/Figure_5/nachr_tree.pdf"))) +
+  theme(plot.margin = margin(0, 0, 1, 0, "cm"))
+
+
+
+
+
+### betatubulins
+# read in btub tree file
+btub.phylo <- read.iqtree(here("Phylogenetics/btubs/tree/btubs_trim_final.aln.treefile"))
+
+# convert tree (phylo object) to tibble (relabel) and generate d1 with other data
+d1 <- as_tibble(btub.phylo) %>% 
+  mutate(species = case_when(
+    label %in% Bma.protein.list ~ 'Bma',
+    label %in% Cel.gene.list ~ 'Cel'
+  )) %>% 
+  left_join(., all_id) %>% 
+  mutate(tiplab = case_when(
+    is.na(gene_name) == TRUE ~ protein_id,
+    TRUE ~ gene_name
+  ))
+
+#read lgics in from tree (first run code further down to get d1)
+btubs <- d1 %>% dplyr::filter(species == "Bma")
+btubs.list <- unique(btubs$gene_id)
+
+gene_counts <- counts %>% 
+  dplyr::filter(gene_id %in% btubs.list) %>% 
+  dplyr::select(gene_id, index, counts) %>%
+  pivot_wider(names_from = index, values_from = counts) %>%
+  column_to_rownames(var = "gene_id")
+
+
+gene_counts <- matrix_heatmap(gene_counts)
+
+
+
+# correlation matrix on transposed counts (columns = genes)
+library(Hmisc)
+gene_counts.t <- t(gene_counts)
+cor <- rcorr(gene_counts.t, type = c("pearson","spearman"))
+cor.r <- as.data.frame(cor$r) %>%
+  rownames_to_column(var = "gene_id") %>% 
+  pivot_longer(cols=2:5, names_to = "gene_id_2", values_to = "corr") %>%
+  transmute(from = pmin(gene_id, gene_id_2), to = pmax(gene_id, gene_id_2), corr) %>%
+  distinct()
+
+
+
+#reroot
+#btub.phylo <- ape::root(btub.phylo, node = 14)
+
+(node_labels <- ggtree(btub.phylo, layout = "circular", branch.length = "none") %<+% d1 +
+    geom_text2(aes(subset = !isTip, label = node), size = 2, hjust = -.3) +
+    geom_text2(aes(subset = !isTip, label = UFboot, color = UFboot), size = 2, hjust = -.3, vjust = 3) +
+    geom_tiplab(aes(label = tiplab)) +
+    theme_tree2() +
+    NULL)
+
+
+# prepare correlation data
+cor_tree <- cor.r %>% 
+  left_join(., select(d1, gene_id, tiplab), by = c('from' = 'gene_id')) %>% 
+  rename(from_gene_id = tiplab) %>% 
+  left_join(., select(d1, gene_id, tiplab), by = c('to' = 'gene_id')) %>%
+  rename(to_gene_id = tiplab) %>% 
+  select(from = from_gene_id, to = to_gene_id, corr)
+
+
+
+btub.tibble <- as_tibble(btub.phylo) %>% 
+  left_join(., d1, by = 'label') %>% 
+  select(!contains('.y')) %>% 
+  rename(node = node.x) %>% 
+  dplyr::slice(1:10) %>%
+  mutate(newlab = str_remove(tiplab, "Bma-")) %>% 
+  mutate(newlab = case_when(newlab== "Bm4733" ~ "btub-1",
+                            newlab == "Bm9698" ~ "btub-2",
+                            TRUE ~ as.character(newlab)))
+
+btub_cor <- cor_tree %>% 
+  filter(from %in% btub.tibble$tiplab & to %in% btub.tibble$tiplab) %>%
+  filter(from != to) %>% 
+  filter(corr > 0) %>%
+  mutate(color = cut(corr, 9, labels = LETTERS[1:9]))
+
+btub.phylo@phylo$tip.label <- btub.tibble$tiplab
+btub.phylo@data$SH_aLRT <- 0.1
+
+(btub.tree <- ggtree(btub.phylo, layout = 'inward_circular', branch.length = 'SH_aLRT', xlim = 3) %<+% btub.tibble +
+    geom_tippoint(aes(fill = species),
+                  shape = 21,
+                  size = 2) +
+    geom_taxalink(data = btub_cor, mapping = aes(taxa1 = from, taxa2 = to,color = color),
+                  size = 1,
+                  ncp = 2,
+                  offset = 1.1,
+                  outward = FALSE,
+                  alpha = 0.8) +
+    geom_tiplab(aes(label = newlab),
+                size = 3,
+                align = TRUE,
+                linesize = 0,
+                linetype = 0,
+                offset = -1,
+                hjust = 0,
+                fontface = 'italic') +
+    scale_color_brewer(palette = 'Reds') +
+    scale_fill_manual(values = c('black', 'white')) +
+    theme(legend.position = "empty")+
+    NULL)
+
+#ggsave(btub.tree, filename = "~/Desktop/btub.tree.pdf", device = cairo_pdf, width = 3, height = 3)
+btub <- ggdraw() +
+  draw_image(magick::image_read_pdf(here("Figures/Figure_5/btub.tree.pdf")))
+
+
+
+
+## Create final figure 5
+row1 <- plot_grid(fig4a, fig4b, ncol = 2, rel_widths = c(1.2, 0.8), labels = c("A", "B"), rel_heights = c(0.9, 0.5), scale = c(1, 0.9), vjust = -0.2, label_fontface = "plain", label_fontfamily = "helvetica", label_size = 12, align = "v", axis = "t") 
+
+row2_labels <- plot_grid(NULL, NULL, NULL,ncol = 3, labels = c("GluCls", "β-tubulins", "nAChRs"),label_fontface = "plain", label_fontfamily = "helvetica", label_size = 10, hjust = c(-2.5, -0.9, -1.5), vjust = c(1.5, 1.5, -6))
+
+row2 <- plot_grid(NULL, glc, btub, nachr, ncol = 4, labels = c("C","", "", ""), rel_widths = c(0.01, 0.9, 0.9, 1.3), rel_heights = c(1, 1.2, 1.2, 2), scale = c(1, 1.1, 1.1, 1.8), vjust = c(-2,0.75,0.75,0), hjust = c(-1, -2, -1.25, -1.65), label_fontface = "plain", label_fontfamily = "helvetica", label_size = 12) 
+
+
+# combine all rows for final plot
+Figure_5 <- plot_grid(row1, row2_labels, row2,NULL, nrow=4, rel_heights = c(1.2, 0.05, 0.3, 0.05))+
+  theme(plot.margin = unit(c(0.5, 0, 0.1, 0), "cm"))
+
+
+
+(coexp <- plot_grid(glc,NULL, btub,NULL, nachr, nrow = 5, rel_heights = c(0.75,0.01, 0.75,0.01, 1), scale = c(0.9,1, 0.9, 1,1), labels = c("GluCl","", "β-tubulin", "","nAChR"), hjust = c(-6.25, 1, -4, 1, -5), vjust = c(1.5, 1, 1.5, 1, 0.75), label_fontface = "plain", label_size = 10))
+
+row1b <- plot_grid(fig4a, coexp, ncol = 2, rel_widths = c(1.3, 0.7), labels = c("A", "C"), scale = c(1, 1), vjust = -0.2, label_fontface = "plain", label_size = 12, align = "v", axis = "t") 
+
+
+Figure_4 <- plot_grid(row1b,NULL, fig4b, nrow=3, rel_heights = c(1.4,0.01, 0.45))+
+  theme(plot.margin = unit(c(0.5, 0.1, 0.1, 0.1), "cm"))
+
+
+# save plot
+ggsave(Figure_4, filename =  here("Figures/Figure_4/Figure_4.pdf"), device = cairo_pdf, width = 8, height = 11.5, units = "in")
+
+
+
+
+
+#################
+### Supplemental Figure - Dot plot of total read fraction from raw transcripts for each cluster
+#################
+trans <- data %>% 
+  left_join(md) %>% 
+  left_join(raw) %>% 
+  filter(counts > 0) %>% 
+  select("gene_id", "counts", "integrated_snn_res.0.5", "index") %>% 
+  filter(gene_id %in% genes)
+
+tmp <- trans %>% 
+  group_by(integrated_snn_res.0.5) %>% 
+  pivot_wider(names_from = index, values_from = counts)
+
+tmp[is.na(tmp)] <- 0
+
+# calculate the total
+tmp$raw_summed <- rowsums(as.matrix(tmp[,c(-1, -2)])) 
+new <- tmp %>% select("gene_id", "integrated_snn_res.0.5", "raw_summed")
+
+total <- new %>% 
+  group_by(gene_id) %>% 
+  summarise(total = sum(raw_summed)) %>% 
+  left_join(new) %>% 
+  mutate(fraction = ((raw_summed/total)*100)) %>% 
+  left_join(drugs)
+
+total$integrated_snn_res.0.5<- factor(total$integrated_snn_res.0.5, levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"), labels = c("1", "2", "3", "4", "5","6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"))
+
+total <- total %>% 
   mutate(ID = case_when(
-  Cluster == "1" ~ "Unannotated",
-  Cluster == "2" ~ "MS",
-  Cluster == "3" ~ "Unannotated",
-  Cluster == "4" ~ "Unannotated",
-  Cluster == "5" ~ "Unannotated",
-  Cluster == "6" ~ "C",
-  Cluster == "7" ~ "Unannotated",
-  Cluster == "8" ~ "Unannotated",
-  Cluster == "9" ~ "MD",
-  Cluster == "10" ~ "Unannotated",
-  Cluster == "11" ~ "Neuron",
-  Cluster == "12" ~ "Neuron",
-  Cluster == "13" ~ "Neuron",
-  Cluster == "15" ~ "S",
-  Cluster == "14" ~ "CA",
-  Cluster == "16" ~ "Unannotated",
-  Cluster == "17" ~ "MD",
-  Cluster == "18" ~ "Neuron",
-  Cluster == "19" ~ "MS",
-  Cluster == "20" ~ "Unannotated",
-  Cluster == "21" ~ "Unannotated",
-  Cluster == "22" ~ "IB",
-  Cluster == "23" ~ "Neuron",
-  Cluster == "24" ~ "Neuron",
-  Cluster == "25" ~ "Neuron",
-  Cluster == "26" ~ "Neuron",
-  Cluster == "27" ~ "Neuron"))
+    integrated_snn_res.0.5 == "1" ~ "Unannotated",
+    integrated_snn_res.0.5 == "2" ~ "MS",
+    integrated_snn_res.0.5 == "3" ~ "Unannotated",
+    integrated_snn_res.0.5 == "4" ~ "Unannotated",
+    integrated_snn_res.0.5 == "5" ~ "Unannotated",
+    integrated_snn_res.0.5 == "6" ~ "C",
+    integrated_snn_res.0.5 == "7" ~ "Unannotated",
+    integrated_snn_res.0.5 == "8" ~ "Unannotated",
+    integrated_snn_res.0.5 == "9" ~ "MD",
+    integrated_snn_res.0.5 == "10" ~ "Unannotated",
+    integrated_snn_res.0.5 == "11" ~ "Neuron",
+    integrated_snn_res.0.5 == "12" ~ "Neuron",
+    integrated_snn_res.0.5 == "13" ~ "Neuron",
+    integrated_snn_res.0.5 == "15" ~ "S",
+    integrated_snn_res.0.5 == "14" ~ "CA",
+    integrated_snn_res.0.5 == "16" ~ "Unannotated",
+    integrated_snn_res.0.5 == "17" ~ "MD",
+    integrated_snn_res.0.5 == "18" ~ "Neuron",
+    integrated_snn_res.0.5 == "19" ~ "MS",
+    integrated_snn_res.0.5 == "20" ~ "Unannotated",
+    integrated_snn_res.0.5 == "21" ~ "Unannotated",
+    integrated_snn_res.0.5 == "22" ~ "IB",
+    integrated_snn_res.0.5 == "23" ~ "Neuron",
+    integrated_snn_res.0.5 == "24" ~ "Neuron",
+    integrated_snn_res.0.5 == "25" ~ "Neuron",
+    integrated_snn_res.0.5 == "26" ~ "Neuron",
+    integrated_snn_res.0.5 == "27" ~ "Neuron"))
 
 
-# assign cluster colors based on Fig2a golbal umap
-response <- response %>% 
-  mutate(color = case_when(
-    Cluster == "1" ~ "#c1d6d3",
-    Cluster == "2" ~ "#5c8492",
-    Cluster == "3" ~ "#b25757",
-    Cluster == "4" ~ "#6a9491",
-    Cluster == "5" ~ "#7a7f84",
-    Cluster == "6" ~ "#cab6b2",
-    Cluster == "7" ~ "#fae2af",
-    Cluster == "8" ~ "#f3933b",
-    Cluster == "9" ~ "#ac8287",
-    Cluster == "10" ~ "#65838d",
-    Cluster == "11" ~ "#82aca7",
-    Cluster == "12" ~ "#fe906a",
-    Cluster == "13" ~ "#e3e2e1",
-    Cluster == "14" ~ "#e89690",
-    Cluster == "15" ~ "#cd4c42",
-    Cluster == "16" ~ "#6f636b",
-    Cluster == "17" ~ "#82ac92",
-    Cluster == "18" ~ "#a26f6a",
-    Cluster == "19" ~ "#184459",
-    Cluster == "20" ~ "#596c7f",
-    Cluster == "21" ~ "#263946",
-    Cluster == "22" ~ "#d97f64",
-    Cluster == "23" ~ "#a0b4ac",
-    Cluster == "24" ~ "#e3e2e1",
-    Cluster == "25" ~ "#fbc1c1",
-    Cluster == "26" ~ "#7f93a2",
-    Cluster == "27" ~ "#d76660"))
-
-library(ggrepel)
-
-#plot faceted by annotation
-vol_panel <- ggplot(data = response, aes(x = avg_log2FC, y = -log10(p_val_adj)))+
-    geom_point(data = subset(response, avg_log2FC <= -1 & -log10(p_val_adj) >= -log(0.05)), color = "#f3933b", show.legend = TRUE, size = 1)+
-    geom_point(data = subset(response, avg_log2FC >= 1 & -log10(p_val_adj) >= -log(0.05)),color = "#f3933b", show.legend = TRUE, size = 1)+
-    geom_point(data = subset(response, avg_log2FC <= 1 & avg_log2FC > -0.6),color = "#65838d", alpha = 0.5, size = 0.25, show.legend = FALSE)+
-    geom_point(data = subset(response, avg_log2FC >= -1 & -log10(p_val_adj) <= -log(0.05)), color = "light grey", alpha = 0.5, size = 0.25, show.legend = FALSE)+
-    geom_point(data = subset(response, -log10(p_val_adj) < -log(0.05)), color = "#65838d", alpha = 0.5, size = 0.5, show.legend = FALSE)+
-    #geom_text_repel(data = subset(response, avg_log2FC >= 1 & -log10(p_val_adj) >= -log(0.05)), aes(label = Gene.name, fontface = 3),size = 2.5, nudge_y =0, nudge_x = 0, color = "black", max.iter = 100000, max.overlaps = 9, force  = 3)+  
-    xlim(-3, 3)+
-    geom_hline(yintercept = -log(0.05), linetype = "dotted", col = "black", alpha = 0.3)+
-    geom_vline(xintercept = c(-1, 1), linetype = "dotted", col = "black", alpha = 0.3)+
-   # annotate(data = subset(response, ID == "C"), geom= "text", x = 2,y = 100, label = "Treated")+
-   # annotate(geom= "text", x = -1,y = 100, label = "Untreated")+
-    facet_wrap(~ID, ncol = 4, nrow = 2)+
-    labs(x = expression(Log["2"]~'(Fold Change)'), y = expression(-Log["10"]~italic(P)), color = "Cluster")+
-    geom_text(aes(label = ifelse(avg_log2FC <= -1 & -log10(p_val_adj) >= -log(0.05), as.character(gene_id), "")))+
-    #scale_color_identity(guide = "legend", labels = c("1", "Muscle (2)", "3", "4", "5", "Coelomocyte (6)", "7", "8", "Mesoderm (9)", "10", "Neuron (11)", "Neuron (12)", "Neuron (13)", "Canal-assoc. (14)", "Secretory (15)", "16", "Mesoderm (17)", "Neuron (18)", "Muscle (19)", "20", "21", "Inner body (22)", "Unannotated (23)", "Neuron (24)", "Neuron (25)", "Neuron (26)", "Neuron (27)"))+
-    theme(axis.text.x = ggplot2::element_text(size = 8, face = "plain"),
-          axis.text.y = ggplot2::element_text(size = 8, face = "plain"),
-          axis.title.x = ggplot2::element_text(size = 8, face = "plain"),
-          axis.title.y = ggplot2::element_text(size = 8,face = "plain"), 
-          legend.text = element_markdown(size = 8,face = "plain"),
-          panel.background = element_blank(),
-          axis.line = element_line (colour = "black"),
-          legend.background=element_blank(),
-          legend.key = element_blank(),
-          legend.spacing.y = unit(0.5, "lines"),
-          strip.background = element_blank())+
-    guides(color = guide_legend(override.aes = list(size=2, alpha = 1)))+
-    NULL
+total$ID <- factor(total$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron", "Unannotated"))
+total$type <- factor(total$type, levels = c("B-Tubulin", "BK", "GPCR", "LGIC", "GluCl", "ACC", "nAChR", "TRP", "CNG"), labels = c("β-tubulin","BK", "GPCR", "LGIC", "GluCl", "ACC", "nAChR", "TRP", "CNG"))
 
 
-# combined volcao plot colored by cluster and labeled points
-volcano <- ggplot(data = response, aes(x = avg_log2FC, y = -log10(p_val_adj)))+
-  geom_point(data = subset(response, avg_log2FC <= -1 & -log10(p_val_adj) >= -log(0.05)), aes(color = color), show.legend = TRUE, size = 1)+
-  geom_point(data = subset(response, avg_log2FC >= 1 & -log10(p_val_adj) >= -log(0.05)), aes(color = color), show.legend = TRUE, size = 1)+
-  geom_point(data = subset(response, avg_log2FC <= 1 & avg_log2FC > -0.6),color = "light grey", alpha = 0.5, size = 0.25, show.legend = FALSE)+
-  geom_point(data = subset(response, avg_log2FC >= -1 & -log10(p_val_adj) <= -log(0.05)), color = "light grey", alpha = 0.5, size = 0.25, show.legend = FALSE)+
-  geom_point(data = subset(response, -log10(p_val_adj) < -log(0.05)), color = "light grey", alpha = 0.5, size = 0.5, show.legend = FALSE)+
-    geom_text_repel(data = subset(response, avg_log2FC >= 1 & -log10(p_val_adj) >= -log(0.05)), aes(label = Gene.name, fontface = 3),size = 2.5, nudge_y =0, nudge_x = 0, color = "black", max.iter = 100000, max.overlaps = 12, force  = 3)+  
-  xlim(-3, 3)+
-  geom_hline(yintercept = -log(0.05), linetype = "dotted", col = "black", alpha = 0.3)+
-  geom_vline(xintercept = c(-1, 1), linetype = "dotted", col = "black", alpha = 0.3)+
-  annotate(geom= "text", x = 1.5,y = 115, label = "1 µM IVM", size = 2.5)+
-  annotate(geom= "text", x = -1.5,y = 115, label = "Untreated", size = 2.5)+
-  #facet_wrap(~ID)+
-  labs(x = expression(Log["2"]~'(Fold Change)'), y = expression(-Log["10"]~italic(P)), color = "Cluster")+
-  geom_text(aes(label = ifelse(avg_log2FC <= -1 & -log10(p_val_adj) >= -log(0.05), as.character(gene_id), "")))+
-  scale_color_identity(guide = "legend", labels = c("1", "Muscle (2)", "3", "4", "5", "Coelomocyte (6)", "7", "8", "Mesoderm (9)", "10", "Neuron (11)", "Neuron (12)", "Neuron (13)", "Canal-assoc. (14)", "Secretory (15)", "16", "Mesoderm (17)", "Neuron (18)", "Muscle (19)", "20", "21", "Inner body (22)", "Unannotated (23)", "Neuron (24)", "Neuron (25)", "Neuron (26)", "Neuron (27)"))+
-  theme(axis.text.x = ggplot2::element_text(size = 8, face = "plain"),
-        axis.text.y = ggplot2::element_text(size = 8, face = "plain"),
-        axis.title.x = ggplot2::element_text(size = 8, face = "plain"),
-        axis.title.y = ggplot2::element_text(size = 8,face = "plain"), 
-        legend.title = element_text(size = 8),
-        legend.text = element_markdown(size = 7,face = "plain"),
-        panel.background = element_blank(),
-        axis.line = element_line (colour = "black"),
-        legend.background=element_blank(),
-        legend.key = element_blank(),
-        legend.position = c(0.15, 0.5),
-        #legend.position = "none",
-        #legend.spacing.y = unit(0.5, "lines"),
-        legend.key.height = unit(0.1, "cm"),
-        legend.key.width = unit(0.1, "cm"))+
-        #legend.key.size = unit(0.1, "cm"))+
- guides(color = guide_legend(override.aes = list(size=1, alpha = 1), ncol = 1))+
-  NULL
+# plot
+(supp_plot <- total %>% 
+    filter(fraction >= 1) %>% 
+    ggplot(aes(y = integrated_snn_res.0.5, x = name))+
+    geom_point(aes(size = fraction, color = type))+
+    scale_size("Total reads (%)", range = c(0, 4), breaks = c(1, 5, 10, 25, 50, 75, 100))+
+    scale_color_manual(values = dakota)+
+    labs(x = "Genes", y = "Cluster", size = "Total reads (%)")+
+    facet_grid(cols = vars(ID), rows = vars(type), space = "free", scales = "free", drop = TRUE)+
+    theme(#text=element_text(family="Helvetica"),
+      panel.background = element_blank(),
+      axis.line = element_line (colour = "black"),
+      legend.background=element_blank(),
+      legend.text = element_text(size = 8),
+      legend.title = element_text(size = 8, vjust = 1),
+      legend.key = element_blank(),
+      axis.text.x = ggplot2::element_text(size = 8, angle = 90, vjust = 0.5),
+      axis.text.y = ggplot2::element_text(size = 8, hjust = 1, face = "italic"),
+      axis.title.x = ggplot2::element_text(size = 10, vjust = -1),
+      axis.title.y = ggplot2::element_text(size = 10), 
+      strip.text.x = element_text(size = 8),
+      strip.text.y = element_text(size = 8, angle = 0),
+      strip.background = element_blank(),
+      panel.spacing.x = unit(0.5, "lines"), 
+      legend.key.width = unit(0.35, "cm"),
+      legend.key.height = unit(0.25, "cm"),
+      #legend.key.size = unit(0.25, "cm"), 
+      legend.position = "bottom",
+      panel.grid = element_line(color = "#ededed", size = 0.05))+
+    coord_flip()+
+    guides(color= "none"))
 
 
-
-
-################
-### Figure 5
-################
-row1 <- cowplot::plot_grid(NULL, Fig5a_diagram, Fig5a_flow, ncol = 3, 
-                  rel_widths = c(0.01, 0.25, 1),
-                  rel_heights = c(1, 0.25, 1),
-                  labels = c("A", "", ""), 
-                  label_fontface = "plain",
-                  label_fontfamily = "Helvetica",
-                  label_size = 12, 
-                  vjust = 0.5)+ theme(plot.margin = margin(0.3, 0.01, 0, 0, "cm"))
-
-
-
-row2 <- cowplot::plot_grid(NULL,Fig5b, Fig5c,  ncol =3 , 
-                           rel_widths = c(0.01, 1, 1),
-                           labels = c("B", "", "C"), 
-                           scale = c(1, 1, 0.99),
-                           label_fontface = "plain",
-                           label_fontfamily = "Helvetica",
-                           label_size = 12, 
-                           vjust = c(0, 0),
-                           align = "v",
-                           axis = "b") + theme(plot.margin = margin(0, 0.01, 0, 0, "cm"))
-
-
-
-
-row3 <- cowplot::plot_grid( Fig5d, NULL, ncol = 2,
-                           rel_widths = c( 1.4, 0.01),
-                           rel_heights = c( 1.4, 1),
-                           scale = c( 1, 1),
-                           labels = c("D", ""),
-                           label_fontface = "plain",
-                           label_fontfamily = "Helvetica",
-                           label_size = 12, 
-                           vjust = 1) + theme(plot.margin = margin(0, 0, 0, 0, "cm"))
-
-row4 <- cowplot::plot_grid( umap, vol_panel, volcano, ncol = 3,
-                            rel_widths = c( 0.4,1.25, 1.35),
-                            rel_heights = c(0.5, 1, 1),
-                            scale =c(0.75, 1, 1),
-                            labels = c("E", ""),
-                            label_fontface = "plain",
-                            label_fontfamily = "Helvetica",
-                            label_size = 12, 
-                            vjust = 1.5) + theme(plot.margin = margin(0, 0, 0, 0, "cm"))
-  
-
-
-
-Figure_5 <- cowplot::plot_grid(row1, row2, row3, row4, nrow = 4, rel_widths = c(1, 1, 1,1), rel_heights = c(1, 0.85, 1,1.1))
-
-ggsave(Figure_5, filename = here("Figures/Figure_5.pdf"), device = cairo_pdf, width = 8.5, height = 10)
-
-
+ggsave(supp_plot, filename = here("drugtargets_readfraction_percluster.pdf"), device = cairo_pdf, width = 6, height = 10, units = "in")

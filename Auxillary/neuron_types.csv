@@ -18,8 +18,8 @@ WBGene00224985,tdc-1,Aminergic,Tyraminergic,synthesis,,"Serrano-Saiz et. al, 201
 WBGene00227917,tph-1,Aminergic,Serotonergic,synthesis,,"Serrano-Saiz et. al, 2017"
 WBGene00226652,unc-25,GABAergic,,synthesis,expressed in all GABAergic neuron classes,"McIntire et al. 1993, Gendrel et al. 2016, Serrano-Saiz et. al, 2020, Serrano-Saiz et. al, 2017"
 WBGene00226131,unc-47,GABAergic,,transport,transmembrane amino acid transporter protein,"Serrano-Saiz et. al, 2020, Serrano-Saiz et. al, 2017"
-WBGene00226594,ric-4,Pan,,Pan,"Is predicted to encode a protein with the following domains: SNAP-25 family; Target SNARE coiled-coil homology domain; and SNAP-25 domain. Is an ortholog of C. elegans chrV_pilon.g15472 and ric-4. In C. elegans, ric-4 is involved in cholinergic synaptic transmission.",Stefanakis et al. 2015
-WBGene00225764,sbt-1,Pan,,Pan,,Gendrel et al. 2016
-WBGene00221982,ida-1,Pan,,Pan,,
-WBGene00223147,egl-3,Pan,,Pan,,Stefanakis et al. 2015
-WBGene00223381,egl-21,Pan,,Pan,,Stefanakis et al. 2015
+WBGene00226594,ric-4,Pan-neuronal,,Pan-neuronal,"Is predicted to encode a protein with the following domains: SNAP-25 family; Target SNARE coiled-coil homology domain; and SNAP-25 domain. Is an ortholog of C. elegans chrV_pilon.g15472 and ric-4. In C. elegans, ric-4 is involved in cholinergic synaptic transmission.",Stefanakis et al. 2015
+WBGene00225764,sbt-1,Pan-neuronal,,Pan-neuronal,,Gendrel et al. 2016
+WBGene00221982,ida-1,Pan-neuronal,,Pan-neuronal,,
+WBGene00223147,egl-3,Pan-neuronal,,Pan-neuronal,,Stefanakis et al. 2015
+WBGene00223381,egl-21,Pan-neuronal,,Pan-neuronal,,Stefanakis et al. 2015

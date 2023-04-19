@@ -1,0 +1,34 @@
+﻿component,gene_id,transcript_id,protein_name,description_function,Reference,bma_ortho,bma_genename
+Kinesin-II,WBGene00002222,F20C5.2,KLP-11,95KD Motor,Signor et al. 1999b,WBGene00223721,Bma-klp-11
+Kinesin-II,WBGene00002230,Y50D7A.6,KLP-20,85KD Motor,,WBGene00226971,Bma-klp-20
+Kinesin-II,WBGene00002182,F08F8.3,KAP-1,Accessory subunit,Signor et al. 1999b,WBGene00232853,Bma-kap-1
+OSM-3-kinesin,WBGene00003884,M02B7.3,OSM-3,Motor,"Shakir et al., 1993",,
+IFT-dynein,WBGene00000485,F18C12.1,CHE-3,Motor,"Wicks et al., 2000",WBGene00223694,Bma-che-3.1
+IFT-dynein,WBGene00000485,F18C12.1,CHE-3,Motor,"Wicks et al., 2000",WBGene00269033,Bma-che-3.2
+IFT-dynein,WBGene00006960,F02D8.3,XBX-1,Light intermediate chain,"Schafer et al., 2003",WBGene00223410,Bma-xbx-1
+IFT-dynein,WBGene00017014,D1009.5,DYLT-2,Light chain,"Efimenko et al., 2005",WBGene00229101,Bma-dylt-2
+IFT subcomplex A1,WBGene00000490,C27A7.4,CHE-11,IFT140,"Qin et al., 2001",WBGene00222681,Bma-che-11
+IFT subcomplex A1,WBGene00000906,F23B2.4,DAF-10,IFT122A,"Bell et al., 2006",WBGene00223793,Bma-daf-10
+IFT subcomplex B1 (core),WBGene00003885,Y41G9A.1,OSM-5,IFT88,"Haycraft et al., 2001",WBGene00226787,Bma-osm-5
+IFT subcomplex B1 (core),WBGene00017973,F32A6.2,IFT-81,IFT81,,WBGene00224003,Bma-ift-81
+IFT subcomplex B1 (core),WBGene00016005,C18H9.8,IFT-74,IFT(74/72),,WBGene00228712,Bma-ift-74
+IFT subcomplex B1 (core),WBGene00003886,R31.3,OSM-6,IFT52,"Collet et al., 1998",WBGene00225660,Bma-osm-6
+IFT subcomplex B1 (periphery),WBGene00003883,T27B1.1,OSM-1,IFT172,"Bell et al., 2006",WBGene00226300,Bma-osm-1
+IFT subcomplex B1 (periphery),WBGene00000484,F38G1.1,CHE-2,IFT80,"Fujiwara et al., 1999",WBGene00224182,Bma-che-2
+IFT subcomplex B1 (periphery),WBGene00000492,F59C6.7,CHE-13,IFT(57/55),"Haycraft et al., 2003",WBGene00224849,Bma-che-13
+IFT subcomplex B1 (periphery),WBGene00022465,Y110A7A.20,,IFT20,,,
+BBS proteins,WBGene00000241,Y105E8A.5,BBS-1,"BBS-7 and BBS-8 act to stabilize IFT subcomplex A and B components and join/coordinate the two kinesin motors, OSM-3-kinesin and Kinesin-II","Mak et al., 2006",WBGene00227493,Bma-bbs-1
+BBS proteins,WBGene00000242,F20D12.3,BBS-2,,,WBGene00223732,Bma-bbs-2.1
+BBS proteins,WBGene00000242,F20D12.3,BBS-2,,,WBGene00268945,Bma-bbs-2.2
+BBS proteins,WBGene00043992,C38D4.8,BBS-3,,,WBGene00224803,Bm4542
+BBS proteins,WBGene00043992,F58A4.14,BBS-4,,,WBGene00224803,Bm4542
+BBS proteins,WBGene00010974,R01H10.6,BBS-5,,,WBGene00225434,Bma-bbs-5
+BBS proteins,WBGene00003892,Y75B8A.12,BBS-7,n1606,,WBGene00227398,Bma-osm-12
+BBS proteins,WBGene00000244,T25F10.5,BBS-8,nx77,,WBGene00226270,Bma-bbs-8
+BBS proteins,WBGene00016744,C48B6.8,BBS-9,,,WBGene00223092,Bma-bbs-9
+Motor activators,WBGene00001117,F54C1.5,DYF-1,Activates OSM-3-kinesin,"Ou et al., 2005",WBGene00224603,Bma-dyf-1
+Motor activators,WBGene00001129,C27H5.7,DYF-13,Function unclear; required for building distal segment,"Blacque et al., 2005",WBGene00222702,Bma-dyf-13
+Various,WBGene00001118,ZK520.1/.3,DYF-2,IFT protein,"Efimenko et al., 2006",WBGene00232323,Bma-dyf-2
+Various,WBGene00001119,C04C3.5,DYF-3,IFT protein; linked to PKD,"Murayama et al., 2005; Ou et al., 2005b",WBGene00224708,Bma-dyf-3
+Various,WBGene00016935,C54G7.4,IFTA-1,IFT protein,"Blacque et al., 2005",WBGene00228957,Bma-ifta-1
+Various,WBGene00012132,T28F3.6,IFTA-2,IFT protein of the RAB family; not required for cilium formation,"Schafer et al., 2006",WBGene00231240,Bm10979

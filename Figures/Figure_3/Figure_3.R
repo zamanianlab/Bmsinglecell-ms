@@ -19,6 +19,7 @@ library(ZamanianLabThemes)
 library(viridis)
 
 #other
+setwd("path/to/directory")
 library(here)
 library(glue)
 
@@ -46,7 +47,7 @@ dakota <- c("#d97f64", "#263946", "#bebab6", "#7a7f84", "#cab6b2", "#fae2af", "#
 ### Fig. 3a - Schematic of FACS filtration and sequencing
 ################
 facs_scheme <- ggdraw() +
-  draw_image(magick::image_read_pdf(here("Figures/Figure_3/FACS_RNAseq.pdf"))
+  draw_image(magick::image_read_pdf(here("Figures/Figure_3/FACS_RNAseq.pdf")))
 
 
 
@@ -61,7 +62,7 @@ facs_scheme <- ggdraw() +
 #Prep raw counts for DESEQ2 analysis of Bma MF bulk RNAseq of large cells via FACS
 
 #read in raw counts
-counts.raw <- readRDS(here("RNAseq/Bma_FACS_RNAseq/counts-es.raw.rds"))
+counts.raw <- readRDS(here("RNAseq/Bma_FACS_RNAseq/data/counts-es.raw.rds"))
 
 # convert to matrix
 counts.raw <- counts.raw %>%
@@ -95,7 +96,7 @@ keep <- keep$gene_id
 
 # read in counts (tpm) and filter for samples that meet the filters for raw
 counts.tpm <- readRDS(here("RNAseq/Bma_FACS_RNAseq/data/counts-es.tpm.rds"))
-  filter(gene_id %in% keep)
+
 
 
 #join counts and sample info, widen, declare and normalize matrix
@@ -229,6 +230,8 @@ tmp <- tmp %>%
 
 
 # plot summed gene expression totals per cell
+library(ggforce)
+
 (umap <- tmp%>%
   subset(total >=3.5) %>% 
   ggplot(aes(x = UMAP_1, y = UMAP_2))+
@@ -366,7 +369,7 @@ test$ID <- factor(test$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron",
 
 # Cel. BK26 with GFP(+) cell
 cel_GFP <- ggdraw() +
-  draw_image(magick::image_read_pdf("Figures/Figure_3/Fig3a_cel_GFP.pdf"))
+  draw_image(magick::image_read_pdf(here("Figures/Figure_3/Fig3a_cel_GFP.pdf")))
 
 cel_GFP <- plot_grid(NULL, cel_GFP, ncol = 2, rel_widths = c(0.001, 1))
 
@@ -471,7 +474,7 @@ fig3d <- plot_grid(cel_GFP, cel_heatmap, ncol = 2, rel_widths = c(1.05, 0.95), s
 
 
 #################
-### Fig.3f - Antigen dotplot
+### Fig.3E - Antigen dotplot
 #################
 antigen <- read.csv(here("Auxillary/antigens.csv"))
 ant_genes <- antigen$gene_id
@@ -534,49 +537,10 @@ labels <- glue_data(
 names(labels) <- dot$gene_name
 
 
-# dotplot of all antigens scaled with alpha by expression  
 (non_zinc <- dot %>%
-  filter(zinc_finger == 0) %>% 
-  ggplot(aes(y = id, x = gene_name))+
-  geom_point(aes(size = pct.exp, color = avg.exp.scaled), show.legend = FALSE)+
-  scale_size("Proportion (%)", range = c(-1, 3), breaks=c(0, 10, 25, 50, 75))+
-  #scale_size_continuous(range = c(-1, 3), nice.breaks = TRUE)+
-  scale_color_viridis_c(limits = c(0, 7))+
-  scale_y_discrete(labels = labels)+
-  labs(x = "Genes", y = "Cluster", size = "Proportion (%)", color = "Avg. Exp.")+
-  facet_grid(cols = vars(ID), space = "free", scales = "free", drop = TRUE)+
-  #facet_grid(cols = vars(ID),space = "free", scales = "free", drop = TRUE)+
-  theme(panel.background = element_blank(),
-        axis.line = element_line (colour = "black"),
-        legend.background=element_blank(),
-        axis.text.x = element_markdown(size = 8, angle = 90 + 1e-09, vjust = 0.5, hjust = 1),
-        axis.text.y = element_text(size = 7.5, face = "italic", angle=0 + 1e-09, hjust = 1),
-        axis.title.x = ggplot2::element_text(size = 10, vjust = -1),
-        axis.title.y = ggplot2::element_text(size = 10, vjust = -5), 
-        strip.text.x = element_text(size = 7),
-        strip.text.y = element_blank(),
-        strip.background = element_blank(),
-        legend.key = element_blank(),
-        legend.key.height = unit(0.25, "cm"),
-        legend.key.width = unit(0.35, "cm"),
-        legend.title = element_text(size = 8, vjust =1),
-        legend.text = element_text(size = 8),
-        legend.text.align = 0.8,
-        legend.position = "bottom",
-        legend.margin = margin(-0.2, 0.5, 0, -0.2, "cm"),
-        plot.margin = margin(0, 0, 1.3, -0.5, "cm"),
-        panel.grid = element_line(color = "#e0e0e0", size = 0.05),
-        panel.spacing.x = unit(0.25, "lines"))+
-     coord_flip()+
-     NULL)
-
-legend <- get_legend(non_zinc)
-
-(zinc <- dot %>%
-    filter(zinc_finger == 1) %>% 
     ggplot(aes(y = id, x = gene_name))+
-    geom_point(aes(size = pct.exp, color = avg.exp.scaled), show.legend = FALSE)+
-    scale_size("Proportion (%)", range = c(-1, 3), breaks=c(0, 10, 25, 50, 75))+
+    geom_point(aes(size = pct.exp, color = avg.exp.scaled), show.legend = TRUE)+
+    scale_size("Proportion (%)", range = c(-1, 4), breaks=c(0, 10, 25, 50, 75))+
     #scale_size_continuous(range = c(-1, 3), nice.breaks = TRUE)+
     scale_color_viridis_c(limits = c(0, 7))+
     scale_y_discrete(labels = labels)+
@@ -587,9 +551,9 @@ legend <- get_legend(non_zinc)
           axis.line = element_line (colour = "black"),
           legend.background=element_blank(),
           axis.text.x = element_markdown(size = 8, angle = 90 + 1e-09, vjust = 0.5, hjust = 1),
-          axis.text.y = element_text(size = 7.5, face = "italic", angle=0 + 1e-09),
+          axis.text.y = element_text(size = 7.5, face = "italic", angle=0 + 1e-09, hjust = 1),
           axis.title.x = ggplot2::element_text(size = 10, vjust = -1),
-          axis.title.y = ggplot2::element_text(size = 10, vjust = -6, color = "white"), 
+          axis.title.y = ggplot2::element_text(size = 10, vjust = -5), 
           strip.text.x = element_text(size = 7),
           strip.text.y = element_blank(),
           strip.background = element_blank(),
@@ -601,7 +565,7 @@ legend <- get_legend(non_zinc)
           legend.text.align = 0.8,
           legend.position = "bottom",
           legend.margin = margin(0.25, 0.5, 0, -0.2, "cm"),
-          plot.margin = margin(0, 0, 1.3, -0.5, "cm"),
+          plot.margin = margin(0, 0, 0.25, -0.5, "cm"),
           panel.grid = element_line(color = "#e0e0e0", size = 0.05),
           panel.spacing.x = unit(0.25, "lines"))+
     coord_flip()+
@@ -611,32 +575,24 @@ legend <- get_legend(non_zinc)
 ## heatmap based on antigen target to indicate diagnostic, vaccine, or prominent antigens
 purpose_nonzinc <- dot %>% 
   select("gene_name", "Vaccine", "DiagnosticAntigen", "Moreno_abundant") %>% 
- pivot_longer(!gene_name, names_to = "purpose", values_to = "counts") %>% 
+  pivot_longer(!gene_name, names_to = "purpose", values_to = "counts") %>% 
   mutate(purpose = case_when(purpose == "DiagnosticAntigen" ~ "Diagnos.",
-                   purpose == "Vaccine" ~ "Vacc.",
-                   purpose == "Moreno_abundant" ~ "Abundant")) %>% 
+                             purpose == "Vaccine" ~ "Vacc.",
+                             purpose == "Moreno_abundant" ~ "Abundant")) %>% 
   left_join(antigen, by = "gene_name") 
 purpose_nonzinc[is.na(purpose_nonzinc)] <- 0
 
 purpose_nonzinc <- purpose_nonzinc %>% 
-  filter(zinc_finger == 0) %>% 
-  select("gene_name", "purpose", "counts", "zinc_finger")  
-  distinct()
- 
-
-purpose_nonzinc <- purpose_nonzinc%>% 
-  mutate(zinc_finger = case_when(zinc_finger == 1 ~ "Zinc finger TFs (C2H2 type)",
-                                 zinc_finger == 0 ~ "Prominent antigens"))
+  select("gene_name", "purpose", "counts")
 
 
 heatmap_nonzinc <- purpose_nonzinc %>% 
-  filter(zinc_finger == "Prominent antigens")  %>% 
   ggplot()+
   geom_tile(data = subset(purpose_nonzinc, counts == 1), aes(x = purpose, y = gene_name, fill = counts))+
   geom_tile(data = subset(purpose_nonzinc, counts == 0), aes(x = purpose, y = gene_name, fill = counts), color = "white", alpha = 0.001)+
   scale_fill_gradient2(guide = "none")+
   scale_y_discrete(position= "right")+
-  facet_grid(rows = vars(zinc_finger), space = "free", scales = "free", drop = TRUE)+
+  #facet_grid(rows = vars(zinc_finger), space = "free", scales = "free", drop = TRUE)+
   theme(panel.background = element_blank(),
         axis.text.x = element_markdown(angle = 90, vjust = 0.5, hjust = 1),
         axis.ticks.y = element_blank(),
@@ -644,149 +600,35 @@ heatmap_nonzinc <- purpose_nonzinc %>%
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
         axis.line.x = element_line(color = "black"),
-        plot.margin = margin(0.575, 0, 0.7, 0.01, "cm"),
+        plot.margin = margin(0.56, 0, 0.925, 0.01, "cm"),
         strip.background = element_blank(),
         strip.text.y = element_blank(),
         panel.grid = element_line(color = "#e0e0e0", size = 0.05))
 
 
 # combine the dot and heatmap into single panel
-(prominent_antigens <- plot_grid(non_zinc, heatmap_nonzinc, nrow = 1, rel_widths = c(1, 0.1), rel_heights = c(1.6, 0.6), align = "v", axis = "tb"))
- 
-
-################
-### Figure 3G - Dot plot of zinc fingers enriched in secretory cell
-################
-purpose_zinc <- dot %>% 
-  select("gene_name", "Vaccine", "DiagnosticAntigen", "Moreno_abundant") %>% 
-  pivot_longer(!gene_name, names_to = "purpose", values_to = "counts") %>% 
-  mutate(purpose = case_when(purpose == "DiagnosticAntigen" ~ "Diagnos.",
-                             purpose == "Vaccine" ~ "Vacc.",
-                             purpose == "Moreno_abundant" ~ "Abundant")) %>% 
-  left_join(antigen, by = "gene_name") 
-purpose_zinc[is.na(purpose_zinc)] <- 0
-
-purpose_zinc <- purpose_zinc %>% 
-  filter(zinc_finger == 1) %>% 
-  select("gene_name", "purpose", "counts", "zinc_finger")  
-distinct()
+(prominent_antigens <- plot_grid(non_zinc, heatmap_nonzinc, nrow = 1, rel_widths = c(1, 0.1), rel_heights = c(1.6, 0.4), align = "v", axis = "tb"))
 
 
-(heatmap_zinc <- purpose_zinc %>% 
-  ggplot()+
-  geom_tile(data = subset(purpose_zinc, counts == 1), aes(x = purpose, y = gene_name, fill = counts))+
-  geom_tile(data = subset(purpose_zinc, counts == 0), aes(x = purpose, y = gene_name, fill = counts), color = "white", alpha = 0.001)+
-  scale_fill_gradient2(guide = "none")+
-  scale_y_discrete(position= "right")+
-  facet_grid(rows = vars(zinc_finger), space = "free", scales = "free", drop = TRUE)+
-    theme(panel.background = element_blank(),
-          axis.text.x = element_markdown(angle = 90, vjust = 0.5, hjust = 1),
-          axis.ticks.y = element_blank(),
-          axis.text.y = element_blank(),
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.line.x = element_line(color = "black"),
-          plot.margin = margin(0.575, 0, 0.7, 0.01, "cm"),
-          strip.background = element_blank(),
-          strip.text.y = element_blank(),
-          panel.grid = element_line(color = "#e0e0e0", size = 0.05)))
-
-
-# combine the dot and heatmap into single panel
-(zinc_fingers <- plot_grid(zinc, heatmap_zinc, nrow = 1, rel_widths = c(1, 0.1), rel_heights = c(1.6, 0.4)))
-
-  
-
-
-#########################
-### Figure 3E - Venn Diagram of sc, bma-facs, and cel-facs datasets
-#########################
-#if (!require(devtools)) install.packages("devtools")
-#devtools::install_github("gaospecial/ggVennDiagram")
-library(ggVennDiagram)
-
-# compute average expression for all differentially expressed genes in secretory cluster and grab the top 100 (?) genes
-BM_marker_15 <- FindConservedMarkers(new_combined, ident.1 = 14, grouping.var = "orig.ident", verbose = TRUE) %>% 
-  filter(utBM_p_val_adj <= 0.05 & utBM_avg_log2FC > 0)
-BM_marker_15 <- rownames_to_column(BM_marker_15, var = "gene_id")
-
-bma_genes <- BM_marker_15$gene_id
-bma_genes <- bma_genes[!duplicated(bma_genes)]
-
-# use Seurat DotPlot function to calculate average and percent expression for genes for dotplot
-bma <- DotPlot(new_combined, features = bma_genes, assay = "RNA", scale = FALSE) 
-bma <- bma$data 
-bma <- rownames_to_column(bma, "genes")
-bma <- bma %>% 
-  mutate(gene_id = substr(genes, 1, 14)) %>% 
-  select(-"genes")
-
-# filter for genes in the secretory cell and exp >= 1, sort in decending order and take the top 100 genes
-bma_tmp <- bma %>% filter(id == 14)
-
-sc <- as.character(bma_tmp$gene_id, stringAsFactors = FALSE)
-
-
-
-# replace Cel gene IDs with bma 1:1 orthologs
-
-
-orthos <- read.csv(here("Auxillary/cel_orthos.csv")) %>%
-  select(-"bma_genome_project")
-colnames(orthos)[2] <- "gene_id"
-gene_list_cel <- cel_facs %>% 
-  left_join(orthos)
-gene_list_cel <- na.omit(gene_list_cel) %>%  # left with 23 orthologous genes
-  select("bma_gene_ID")
-
-colnames(gene_list_cel)[1] <- "gene_id"
-cel <- as.character(gene_list_cel$gene_id, stringAsFactors = FALSE)
-
-
-# create list for venn diagram -- omit the Bma-sc data
-x <- list(S1 = bma_facs, S2 = cel)
-
-
-venn <- Venn(x)
-data = process_data(venn, shape_id == "201f")
-
-(venn_diagram <- ggplot() +
-  geom_sf(aes(fill = count), data = venn_region(data)) +
-  geom_sf(aes(color = id), data = venn_setedge(data), show.legend = FALSE, color = "black", size = 0.1) +
-  xlim(-4, 8)+
-  #geom_sf_text(aes(label = name), data = venn_setlabel(data), position = ) +
-  geom_sf_text(aes(label = count), data = venn_region(data))+
-  annotate(geom = "text", label = "Cel-FACS", x = 6, y = 5.5, size = 3)+
-  annotate(geom = "text", label = "(Large GFP(+))", x = 6.3, y = 4.75, size = 2.5)+
-  annotate(geom = "text", label = "Bma-FACS", x = 6.2, y = 0, size = 3)+
-  annotate(geom = "text", label = "(Largest)", x = 5.5, y = -0.75, size = 2.5)+
-  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF")+
-  theme(legend.position = "none", 
-        panel.background = element_blank(),
-        panel.grid = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title = element_blank(),
-        axis.text = element_blank(),
-        plot.margin = margin(0, 0, 0, 0, "cm"),
-        ))
 
 
 #################
 ### Figure 3 - Assemble complete figure
 ################
-row1 <- plot_grid(fig3a, fig3d, ncol = 2, rel_widths = c(1, 0.7), rel_heights = c(1,1),labels = c("A", "D"),hjust = c(0.5, -0.5), label_fontface = "plain", label_fontfamily = "Helvetica", axis = "t", align = "v", label_size = 10) + theme(plot.margin = margin(0, 0, 0, 0.25, "cm"))
+row1 <- plot_grid(fig3a, umap, ncol = 2, rel_widths = c(1, 0.7), rel_heights = c(1,0.7),labels = c("A", "B"),hjust = c(0.5, -0.2), scale = c(1, 0.95), label_fontface = "plain", label_fontfamily = "Helvetica", axis = "t", align = "v", label_size = 10) + theme(plot.margin = margin(0, 0, 0, 0.25, "cm"))
 
-row2 <- plot_grid(umap,bar, venn_diagram, ncol = 3, rel_widths = c(1.05, 1.15, 0.85), rel_heights = c(0.8, 1, 1), scale= c(0.95, 1, 0.925), labels = c("B", "C", "E"), vjust = c(1.2, 1.2, 1.2), label_fontface = "plain", label_fontfamily = "Helvetica", label_size = 10, axis = "t", align = "v")
+row2 <- plot_grid(bar,fig3d, ncol = 2 , rel_widths = c(1.05, 1.15), rel_heights = c( 1, 1), scale= c(0.95, 1), labels = c("C", "D"), vjust = c(1.2, 1.2), label_fontface = "plain", label_fontfamily = "Helvetica", label_size = 10, axis = "t", align = "v")
 
-row3 <- plot_grid(prominent_antigens, zinc_fingers, ncol = 2, rel_widths = c(1, 1),labels = c("F", "G"), vjust = c(1.25, 1.25), hjust = c(-0.1, -0.5), label_fontface = "plain", label_fontfamily = "Helvetica", axis = "t", align = "v", label_size = 10)+ theme(plot.margin = margin(0, 0, 0, 0.1, "cm"))
-  
+row3 <- plot_grid(prominent_antigens, ncol = 1, rel_widths = c( 1),labels = c("E"), vjust = c(1.25), label_fontface = "plain", label_fontfamily = "Helvetica", axis = "t", align = "v", label_size = 10)+ theme(plot.margin = margin(0, 0, 0, 0.1, "cm"))
+
 
 
 # combine rows into final figure 3
-Figure3 <- plot_grid(row1, row2, NULL, row3, legend, nrow = 5, rel_heights = c(0.7,0.6, 0.04, 1.5,0.03), align = "v") + theme(plot.margin = margin(0.1, 0.1, 0.1, 0, "cm"))
+Figure3 <- plot_grid(row1, row2, NULL, row3, legend, nrow = 5, rel_heights = c(0.7,0.7, 0.04, 1.4,0.03), align = "v") + theme(plot.margin = margin(0.1, 0.1, 0.1, 0, "cm"))
 
 # export pdf file
-ggsave(Figure3, filename = "Figure3.pdf", device = cairo_pdf, width = 9, height = 12, units = "in")
+ggsave(Figure3, filename = "~/Desktop/Figure3.pdf", device = cairo_pdf, width = 9, height = 12, units = "in")
+
 
 
 
@@ -802,7 +644,7 @@ raw <- as_tibble(new_combined@assays[["RNA"]]@counts, rownames = "gene_id") %>%
 
 trans <- data %>% 
   left_join(md) %>% 
-  left_join(raw) %>% 
+  left_join(raw, multiple = "all") %>% 
   filter(counts > 0) %>% 
   select("gene_id", "counts", "integrated_snn_res.0.5", "index") %>% 
   filter(gene_id %in% ant_genes)
@@ -820,12 +662,9 @@ new <- tmp %>% select("gene_id", "integrated_snn_res.0.5", "raw_summed")
 total <- new %>% 
   group_by(gene_id) %>% 
   summarise(total = sum(raw_summed)) %>% 
-  left_join(new) %>% 
+  left_join(new, multiple = "all") %>% 
   mutate(fraction = ((raw_summed/total)*100)) %>% 
   left_join(antigen)
-
-
-total$zinc_finger[is.na(total$zinc_finger)] <- 0
 
 
 total$integrated_snn_res.0.5<- factor(total$integrated_snn_res.0.5, levels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"), labels = c("1", "2", "3", "4", "5","6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27"))
@@ -865,15 +704,15 @@ total$ID <- factor(total$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron
 
 # plot
 (supp_nonzinc <- total %>%
-    filter(zinc_finger == 0) %>% 
+    #filter(zinc_finger == 0) %>% 
     filter(fraction > 1) %>% 
     ggplot(aes(y = integrated_snn_res.0.5, x = gene_name))+
-    geom_point(aes(size = fraction), color = "black", show.legend = FALSE)+
+    geom_point(aes(size = fraction), color = "black", show.legend = TRUE)+
     scale_size("Total reads (%)", range = c(0, 4), breaks = c(1, 5, 10, 25, 50, 75, 100))+
     #scale_color_viridis(discrete = TRUE)+
     #scale_color_manual(values = dakota[3:8])+
-    labs(x = "Genes", y = "Cluster", size = "Total reads (%)", title = "Prominent Antigens")+
-    facet_grid(cols = vars(ID), rows = vars(zinc_finger), space = "free", scales = "free", drop = TRUE)+
+    labs(x = "Genes", y = "Cluster", size = "Total reads (%)")+
+    facet_grid(cols = vars(ID), space = "free", scales = "free", drop = TRUE)+
     theme(#text=element_text(family="Helvetica"),
       panel.background = element_blank(),
       axis.line = element_line (colour = "black"),
@@ -897,47 +736,7 @@ total$ID <- factor(total$ID, levels = c("MS","MD", "C", "S", "CA", "IB", "Neuron
     coord_flip()+
     guides(color= "none"))
 
-
-(supp_zinc <- total %>%
-    filter(zinc_finger == 1) %>% 
-    filter(fraction > 1) %>% 
-    ggplot(aes(y = integrated_snn_res.0.5, x = gene_name,))+
-    geom_point(aes(size = fraction), color = "black", show.legend = FALSE)+
-    scale_size("Total reads (%)", range = c(0, 4), breaks = c(1, 5, 10, 25, 50, 75, 100))+
-    #scale_color_viridis(discrete = TRUE)+
-    #scale_color_manual(values = dakota[3:8])+
-    labs(x = "Genes", y = "Cluster", size = "Total reads (%)", title = "Zinc Finger TFs (C2H2)")+
-    facet_grid(cols = vars(ID), rows = vars(zinc_finger), space = "free", scales = "free", drop = TRUE)+
-    theme(#text=element_text(family="Helvetica"),
-      panel.background = element_blank(),
-      axis.line = element_line (colour = "black"),
-      legend.background=element_blank(),
-      legend.text = element_text(size = 8),
-      legend.title = element_text(size = 8, vjust = 1),
-      legend.key = element_blank(),
-      axis.text.x = ggplot2::element_text(size = 8, angle = 90, vjust = 0.5),
-      axis.text.y = ggplot2::element_text(size = 8, hjust = 1, face = "italic"),
-      axis.title.x = ggplot2::element_text(size = 8, vjust = -1),
-      axis.title.y = ggplot2::element_text(size = 8, vjust = -3), 
-      strip.text.x = element_text(size = 8),
-      strip.text.y = element_blank(),
-      strip.background = element_blank(),
-      panel.spacing.x = unit(0.5, "lines"), 
-      legend.key.width = unit(0.35, "cm"),
-      legend.key.height = unit(0.25, "cm"),
-      #legend.key.size = unit(0.25, "cm"), 
-      legend.position = "bottom",
-      panel.grid = element_line(color = "#ededed", size = 0.05))+
-    coord_flip()+
-    guides(color= "none"))
-
-legend <- get_legend(supp_zinc)
-
-supp_plots <- plot_grid(supp_nonzinc, supp_zinc, ncol = 2)
-supp_plots <- plot_grid(supp_plots, legend, nrow = 2, rel_heights = c(1, 0.1))
-
-
-ggsave(supp_plots, filename = "antigens_readfraction_percluster.pdf", device = cairo_pdf, width = 10, height = 7, units = "in")
+ggsave(supp_plots, filename = "figure3_figuresupplement1.pdf", device = cairo_pdf, width = 10, height = 7, units = "in")
 
 
 
